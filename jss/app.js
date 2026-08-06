@@ -1,12 +1,64 @@
+//=====================================================
+// APP
+//=====================================================
 
-document.addEventListener('DOMContentLoaded', iniciarSistema);
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    iniciarSistema
+
+);
+
+
+//=====================================================
 
 async function iniciarSistema() {
-  try {
-    const resultado = await testarConexaoSupabase();
 
-    console.log('Supabase conectado com sucesso:', resultado);
-  } catch (erro) {
-    console.error('Erro ao conectar ao Supabase:', erro);
-  }
+    try {
+
+        console.clear();
+
+        console.log("");
+
+        console.log("======================================");
+
+        console.log(" Rainforest Consulta");
+
+        console.log("======================================");
+
+        console.log("");
+
+        console.log("Conectando ao Supabase...");
+
+        await testarConexaoSupabase();
+
+        console.log("✔ Conexão realizada.");
+
+        console.log("");
+
+        console.log("Carregando culturas...");
+
+        const culturas = await carregarCulturas();
+
+        console.table(culturas);
+
+        console.log("");
+
+        console.log(
+
+            "Total de culturas:",
+
+            culturas.length
+
+        );
+
+    }
+
+    catch (erro) {
+
+        console.error(erro);
+
+    }
+
 }
