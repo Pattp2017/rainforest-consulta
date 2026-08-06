@@ -2,8 +2,7 @@
 // CONFIGURAÇÃO DO SUPABASE
 // =====================================================
 
-const SUPABASE_URL = 'COLE_AQUI_A_URL_DO_PROJETO';
-const SUPABASE_ANON_KEY = 'COLE_AQUI_A_CHAVE_ANON';
+const SUPABASE_URL = 'https://kdjigqkyqymitdcoczwm.supabase.co/rest/v1/';
 
 // =====================================================
 // VALIDAÇÃO DA CONFIGURAÇÃO
