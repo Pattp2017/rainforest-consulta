@@ -2,7 +2,8 @@
 // CONFIGURAÇÃO DO SUPABASE
 // =====================================================
 
-const SUPABASE_URL = 'https://kdjigqkyqymitdcoczwm.supabase.co/rest/v1/';
+const SUPABASE_URL = 'https://...supabase.co/rest/v1//rest/v1/agrofit_raw';
+const SUPABASE_API_KEY = 'sb_publishable_XXXXXXXXXXXXXXXXXXXXXXXX';
 
 // =====================================================
 // VALIDAÇÃO DA CONFIGURAÇÃO
@@ -12,7 +13,341 @@ function validarConfiguracaoSupabase() {
   if (
     !SUPABASE_URL ||
     SUPABASE_URL.includes('COLE_AQUI') ||
-    !SUPABASE_ANON_KEY ||
+    !SUPABASE_ANON_KEY ||// =====================================================
+// SUPABASE
+// Comunicação com o banco de dados
+// Projeto: Rainforest Consulta
+// =====================================================
+
+//------------------------------------------------------
+// CONFIGURAÇÃO
+//------------------------------------------------------
+
+const SUPABASE_URL = "https://kdjigqkyqymitdcoczwm.supabase.co";
+
+const SUPABASE_API_KEY = "COLE_AQUI_SUA_CHAVE_sb_publishable";
+
+
+//------------------------------------------------------
+// VALIDAÇÃO
+//------------------------------------------------------
+
+function validarConfiguracaoSupabase() {
+
+    if (
+        !SUPABASE_URL ||
+        SUPABASE_URL.includes("COLE_AQUI") ||
+        !SUPABASE_API_KEY ||
+        SUPABASE_API_KEY.includes("COLE_AQUI")
+    ) {
+
+        throw new Error(
+            "Configure SUPABASE_URL e SUPABASE_API_KEY no arquivo supabase.js."
+        );
+
+    }
+
+}
+
+
+//------------------------------------------------------
+// CABEÇALHOS
+//------------------------------------------------------
+
+function obterCabecalhosSupabase() {
+
+    validarConfiguracaoSupabase();
+
+    return {
+
+        apikey: SUPABASE_API_KEY,
+
+        Authorization: `Bearer ${SUPABASE_API_KEY}`,
+
+        "Content-Type": "application/json",
+
+        Accept: "application/json"
+
+    };
+
+}
+
+
+//------------------------------------------------------
+// URL
+//------------------------------------------------------
+
+function montarUrlSupabase(tabela, parametros = {}) {
+
+    validarConfiguracaoSupabase();
+
+    if (!tabela) {
+
+        throw new Error("Tabela não informada.");
+
+    }
+
+    const url = new URL(
+
+        `${SUPABASE_URL}/rest/v1/${tabela}`
+
+    );
+
+    Object.entries(parametros).forEach(([chave, valor]) => {
+
+        if (
+
+            valor !== undefined &&
+            valor !== null &&
+            valor !== ""
+
+        ) {
+
+            url.searchParams.append(chave, valor);
+
+        }
+
+    });
+
+    return url.toString();
+
+}
+
+
+//------------------------------------------------------
+// TRATAMENTO DA RESPOSTA
+//------------------------------------------------------
+
+async function tratarRespostaSupabase(resposta) {
+
+    const texto = await resposta.text();
+
+    let dados = null;
+
+    if (texto) {
+
+        try {
+
+            dados = JSON.parse(texto);
+
+        } catch {
+
+            dados = texto;
+
+        }
+
+    }
+
+    if (!resposta.ok) {
+
+        throw new Error(
+
+            dados?.message ||
+
+            dados?.details ||
+
+            dados?.hint ||
+
+            texto ||
+
+            `Erro HTTP ${resposta.status}`
+
+        );
+
+    }
+
+    return dados;
+
+}
+
+
+//------------------------------------------------------
+// CONSULTA
+//------------------------------------------------------
+
+async function buscarRegistros(
+
+    tabela,
+
+    parametros = {}
+
+) {
+
+    const resposta = await fetch(
+
+        montarUrlSupabase(
+
+            tabela,
+
+            parametros
+
+        ),
+
+        {
+
+            method: "GET",
+
+            headers: obterCabecalhosSupabase()
+
+        }
+
+    );
+
+    return tratarRespostaSupabase(resposta);
+
+}
+
+
+//------------------------------------------------------
+// INSERIR
+//------------------------------------------------------
+
+async function inserirRegistro(
+
+    tabela,
+
+    dados
+
+) {
+
+    const resposta = await fetch(
+
+        montarUrlSupabase(tabela),
+
+        {
+
+            method: "POST",
+
+            headers: {
+
+                ...obterCabecalhosSupabase(),
+
+                Prefer: "return=representation"
+
+            },
+
+            body: JSON.stringify(dados)
+
+        }
+
+    );
+
+    return tratarRespostaSupabase(resposta);
+
+}
+
+
+//------------------------------------------------------
+// ATUALIZAR
+//------------------------------------------------------
+
+async function atualizarRegistro(
+
+    tabela,
+
+    filtros,
+
+    dados
+
+) {
+
+    const resposta = await fetch(
+
+        montarUrlSupabase(
+
+            tabela,
+
+            filtros
+
+        ),
+
+        {
+
+            method: "PATCH",
+
+            headers: {
+
+                ...obterCabecalhosSupabase(),
+
+                Prefer: "return=representation"
+
+            },
+
+            body: JSON.stringify(dados)
+
+        }
+
+    );
+
+    return tratarRespostaSupabase(resposta);
+
+}
+
+
+//------------------------------------------------------
+// EXCLUIR
+//------------------------------------------------------
+
+async function excluirRegistro(
+
+    tabela,
+
+    filtros
+
+) {
+
+    const resposta = await fetch(
+
+        montarUrlSupabase(
+
+            tabela,
+
+            filtros
+
+        ),
+
+        {
+
+            method: "DELETE",
+
+            headers: {
+
+                ...obterCabecalhosSupabase(),
+
+                Prefer: "return=representation"
+
+            }
+
+        }
+
+    );
+
+    return tratarRespostaSupabase(resposta);
+
+}
+
+
+//------------------------------------------------------
+// TESTE DE CONEXÃO
+//------------------------------------------------------
+
+async function testarConexaoSupabase() {
+
+    return await buscarRegistros(
+
+        "agrofit_raw",
+
+        {
+
+            select: "nr_registro",
+
+            limit: 1
+
+        }
+
+    );
+
+}
     SUPABASE_ANON_KEY.includes('COLE_AQUI')
   ) {
     throw new Error(
@@ -29,8 +364,8 @@ function obterCabecalhosSupabase() {
   validarConfiguracaoSupabase();
 
   return {
-    apikey: SUPABASE_ANON_KEY,
-    Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+    apikey: SUPABASE_API_KEY,
+    Authorization: `Bearer ${SUPABASE_API_KEY}`,
     'Content-Type': 'application/json',
     Accept: 'application/json'
   };
