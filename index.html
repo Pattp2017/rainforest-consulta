@@ -1,2 +1,380 @@
-<script src="js/supabase.js"></script>
-<script src="js/app.js"></script>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Sistema de Consulta Rainforest</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/cards.css" />
+</head>
+
+<body>
+
+  <main class="app">
+
+    <header class="header">
+      <h1>🌱 Sistema de Consulta Rainforest</h1>
+      <span>Painel de Conformidade</span>
+    </header>
+
+    <div class="layout">
+
+      <!-- COLUNA ESQUERDA -->
+      <aside>
+
+        <section class="card">
+          <div class="card-title">
+            🔎 Parâmetros de consulta
+          </div>
+
+          <div class="form-group">
+            <label for="campoCultura">
+              1. Selecione a cultura
+            </label>
+
+            <select
+              id="campoCultura"
+              class="form-control"
+            >
+              <option value="">
+                Carregando culturas...
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="campoProduto">
+              2. Digite o nome comercial
+            </label>
+
+            <input
+              id="campoProduto"
+              class="form-control"
+              type="text"
+              autocomplete="off"
+              placeholder="Digite ao menos 3 letras"
+              disabled
+            />
+
+            <div
+              id="listaSugestoes"
+              class="suggestions"
+            ></div>
+          </div>
+
+          <div
+            id="mensagemCarregamento"
+            class="loading"
+          >
+            Consultando dados...
+          </div>
+
+          <div
+            id="mensagemErro"
+            class="error-box"
+          ></div>
+        </section>
+
+        <section class="card">
+          <div class="card-title">
+            📦 Produto & composição
+          </div>
+
+          <div class="data-row">
+            <span class="data-label">
+              Nome comercial:
+            </span>
+
+            <span
+              id="nomeComercial"
+              class="data-value"
+            ></span>
+          </div>
+
+          <div class="data-row">
+            <span class="data-label">
+              Registro MAPA:
+            </span>
+
+            <span
+              id="registroMapa"
+              class="data-value"
+            ></span>
+          </div>
+
+          <div class="data-row">
+            <span class="data-label">
+              Situação MAPA:
+            </span>
+
+            <span
+              id="situacaoMapa"
+              class="data-value"
+            >
+              <span class="badge badge-info">
+                AGUARDANDO
+              </span>
+            </span>
+          </div>
+
+          <div class="data-row">
+            <span class="data-label">
+              Ingrediente ativo:
+            </span>
+
+            <span
+              id="ingredienteAtivo"
+              class="data-value"
+            ></span>
+          </div>
+
+          <div class="data-row">
+            <span class="data-label">
+              Número CAS:
+            </span>
+
+            <span
+              id="numeroCas"
+              class="data-value"
+            ></span>
+          </div>
+        </section>
+
+      </aside>
+
+      <!-- COLUNA DIREITA -->
+      <section>
+
+        <div
+          id="bannerResultado"
+          class="status-banner"
+        >
+          <div class="question">
+            Posso usar na Rainforest?
+          </div>
+
+          <div
+            id="respostaPrincipal"
+            class="answer"
+          >
+            Selecione a cultura e o produto
+          </div>
+        </div>
+
+        <section
+          id="cardClassificacao"
+          class="card"
+        >
+          <div class="card-title">
+            <span>
+              🛡️ Diretrizes & classificação
+            </span>
+
+            <span
+              id="badgeClassificacao"
+              class="badge badge-info"
+            >
+              AGUARDANDO
+            </span>
+          </div>
+
+          <div class="data-row">
+            <span class="data-label">
+              Componente responsável:
+            </span>
+
+            <span
+              id="componenteResponsavel"
+              class="data-value"
+            ></span>
+          </div>
+
+          <div class="data-row">
+            <span class="data-label">
+              Classificação de toxicidade:
+            </span>
+
+            <span
+              id="classificacaoToxicidade"
+              class="data-value"
+            ></span>
+          </div>
+
+          <div class="data-row">
+            <span class="data-label">
+              Grupo:
+            </span>
+
+            <span
+              id="grupoRainforest"
+              class="data-value"
+            ></span>
+          </div>
+
+          <div class="data-row">
+            <span class="data-label">
+              Motivo da restrição:
+            </span>
+
+            <span
+              id="motivoRestricao"
+              class="data-value"
+            ></span>
+          </div>
+        </section>
+
+        <section
+          id="cardUsoExcepcional"
+          class="card hidden"
+        >
+          <div class="card-title">
+            ⚠️ Regras para uso excepcional
+          </div>
+
+          <div class="two-columns">
+
+            <div class="data-row">
+              <span class="data-label">
+                Exceção existe?
+              </span>
+
+              <span
+                id="excecaoExiste"
+                class="data-value"
+              ></span>
+            </div>
+
+            <div class="data-row">
+              <span class="data-label">
+                Cultura autorizada:
+              </span>
+
+              <span
+                id="culturaAutorizada"
+                class="data-value"
+              ></span>
+            </div>
+
+            <div class="data-row">
+              <span class="data-label">
+                Praga autorizada:
+              </span>
+
+              <span
+                id="pragaAutorizada"
+                class="data-value"
+              ></span>
+            </div>
+
+            <div class="data-row">
+              <span class="data-label">
+                Validade da exceção:
+              </span>
+
+              <span
+                id="validadeExcecao"
+                class="data-value"
+              ></span>
+            </div>
+
+          </div>
+
+          <div class="data-row">
+            <span class="data-label">
+              Países liberados:
+            </span>
+
+            <div
+              id="paisesLiberados"
+              class="pill-container"
+            ></div>
+          </div>
+
+          <div class="box-group">
+            <span class="data-label">
+              Condições de uso:
+            </span>
+
+            <div
+              id="condicoesUso"
+              class="text-box"
+            ></div>
+          </div>
+        </section>
+
+        <section
+          id="cardMitigacao"
+          class="card hidden"
+        >
+          <div class="card-title">
+            🟡 Medidas de mitigação
+          </div>
+
+          <div
+            id="medidasMitigacao"
+            class="text-box"
+          ></div>
+        </section>
+
+        <section
+          id="cardFundamentacao"
+          class="card"
+        >
+          <div class="card-title">
+            ⚖️ Fundamentação legal
+          </div>
+
+          <div class="data-row">
+            <span class="data-label">
+              Base legal da classificação:
+            </span>
+
+            <span
+              id="baseLegalClassificacao"
+              class="data-value"
+            ></span>
+          </div>
+
+          <div class="data-row">
+            <span class="data-label">
+              Base legal da exceção:
+            </span>
+
+            <span
+              id="baseLegalExcecao"
+              class="data-value"
+            ></span>
+          </div>
+
+          <div class="legal-footer">
+            <span>
+              Fonte:
+              <strong id="fonteDocumento"></strong>
+            </span>
+
+            <span>
+              Página:
+              <strong id="paginaDocumento"></strong>
+            </span>
+          </div>
+        </section>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <script src="js/supabase.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/agrofit.js"></script>
+  <script src="js/rainforest.js"></script>
+  <script src="js/autocomplete.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
