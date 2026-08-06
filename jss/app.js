@@ -1,64 +1,159 @@
-//=====================================================
-// APP
-//=====================================================
+// =====================================================
+// APLICAÇÃO
+// Inicialização e controle principal do sistema
+// Projeto: Rainforest Consulta
+// =====================================================
+
+// -----------------------------------------------------
+// INICIALIZAÇÃO
+// -----------------------------------------------------
 
 document.addEventListener(
-
-    "DOMContentLoaded",
-
-    iniciarSistema
-
+  "DOMContentLoaded",
+  iniciarSistema
 );
 
-
-//=====================================================
+// -----------------------------------------------------
+// INICIAR SISTEMA
+// -----------------------------------------------------
 
 async function iniciarSistema() {
+  console.clear();
 
-    try {
+  exibirCabecalhoConsole();
 
-        console.clear();
+  try {
+    validarElementosUI();
 
-        console.log("");
+    configurarEstadoInicial();
 
-        console.log("======================================");
+    mostrarCarregamento(
+      "Conectando ao banco de dados..."
+    );
 
-        console.log(" Rainforest Consulta");
+    console.log(
+      "Conectando ao Supabase..."
+    );
 
-        console.log("======================================");
+    await testarConexaoSupabase();
 
-        console.log("");
+    console.log(
+      "✔ Conexão realizada com sucesso."
+    );
 
-        console.log("Conectando ao Supabase...");
+    mostrarCarregamento(
+      "Carregando culturas..."
+    );
 
-        await testarConexaoSupabase();
+    console.log(
+      "Carregando culturas..."
+    );
 
-        console.log("✔ Conexão realizada.");
+    const culturas =
+      await carregarCulturas();
 
-        console.log("");
+    popularSelectCulturas(culturas);
 
-        console.log("Carregando culturas...");
+    configurarEventosDoSistema();
 
-        const culturas = await carregarCulturas();
+    console.log(
+      `✔ ${culturas.length} culturas carregadas.`
+    );
 
-        console.table(culturas);
+    console.table(culturas);
+  } catch (erro) {
+    console.error(
+      "✖ Não foi possível iniciar o sistema.",
+      erro
+    );
 
-        console.log("");
+    mostrarFalhaCulturas();
 
-        console.log(
+    mostrarErro(
+      obterMensagemErro(erro)
+    );
+  } finally {
+    ocultarCarregamento();
+  }
+}
 
-            "Total de culturas:",
+// -----------------------------------------------------
+// CONFIGURAR ESTADO INICIAL
+// -----------------------------------------------------
 
-            culturas.length
+function configurarEstadoInicial() {
+  limparErro();
 
-        );
+  elementosUI.campoCultura.disabled = true;
 
-    }
+  desabilitarCampoProduto();
+}
 
-    catch (erro) {
+// -----------------------------------------------------
+// CONFIGURAR EVENTOS
+// -----------------------------------------------------
 
-        console.error(erro);
+function configurarEventosDoSistema() {
+  elementosUI.campoCultura.addEventListener(
+    "change",
+    tratarAlteracaoCultura
+  );
+}
 
-    }
+// -----------------------------------------------------
+// ALTERAÇÃO DA CULTURA
+// -----------------------------------------------------
 
+function tratarAlteracaoCultura() {
+  limparErro();
+
+  const culturaSelecionada =
+    elementosUI.campoCultura.value.trim();
+
+  if (!culturaSelecionada) {
+    desabilitarCampoProduto();
+
+    return;
+  }
+
+  habilitarCampoProduto();
+
+  console.log(
+    "Cultura selecionada:",
+    culturaSelecionada
+  );
+}
+
+// -----------------------------------------------------
+// MENSAGEM DE ERRO
+// -----------------------------------------------------
+
+function obterMensagemErro(erro) {
+  if (erro instanceof Error) {
+    return erro.message;
+  }
+
+  return String(
+    erro || "Erro inesperado."
+  );
+}
+
+// -----------------------------------------------------
+// CABEÇALHO DO CONSOLE
+// -----------------------------------------------------
+
+function exibirCabecalhoConsole() {
+  console.log(
+    "======================================"
+  );
+
+  console.log(
+    " Rainforest Consulta"
+  );
+
+  console.log(
+    "======================================"
+  );
+
+  console.log("");
 }
