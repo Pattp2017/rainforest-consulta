@@ -86,3 +86,85 @@ function normalizarTextoAgrofit(valor) {
     .toLowerCase()
     .trim();
 }
+
+
+// =====================================================
+// BUSCAR PRODUTOS POR CULTURA E TERMO
+// =====================================================
+
+async function buscarProdutosAgrofit(
+  cultura,
+  termo
+) {
+
+  const culturaLimpa =
+    String(cultura || "").trim();
+
+  const termoLimpo =
+    String(termo || "").trim();
+
+  if (!culturaLimpa) {
+    return [];
+  }
+
+  if (termoLimpo.length < 3) {
+    return [];
+  }
+
+  const registros =
+    await buscarRegistros(
+      TABELA_AGROFIT,
+      {
+        select:
+          "nr_registro,marca_comercial,cultura,ingrediente_ativo,situacao",
+
+        cultura:
+          `eq.${culturaLimpa}`,
+
+        marca_comercial:
+          `ilike.*${termoLimpo}*`,
+
+        order:
+          "marca_comercial.asc",
+
+        limit: 30
+      }
+    );
+
+  if (!Array.isArray(registros)) {
+    throw new Error(
+      "A consulta de produtos não retornou uma lista válida."
+    );
+  }
+
+  const produtosUnicos =
+    new Map();
+
+  registros.forEach((registro) => {
+
+    const nome =
+      String(
+        registro.marca_comercial || ""
+      ).trim();
+
+    if (!nome) {
+      return;
+    }
+
+    const chave =
+      normalizarTextoAgrofit(nome);
+
+    if (!produtosUnicos.has(chave)) {
+      produtosUnicos.set(
+        chave,
+        registro
+      );
+    }
+
+  });
+
+  return Array.from(
+    produtosUnicos.values()
+  );
+
+}
