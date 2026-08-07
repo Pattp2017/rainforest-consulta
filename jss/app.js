@@ -94,10 +94,14 @@ function configurarEstadoInicial() {
 // -----------------------------------------------------
 
 function configurarEventosDoSistema() {
+
   elementosUI.campoCultura.addEventListener(
     "change",
     tratarAlteracaoCultura
   );
+
+  configurarAutocompleteProdutos();
+
 }
 
 // -----------------------------------------------------
