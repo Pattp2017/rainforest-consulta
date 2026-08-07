@@ -11,9 +11,9 @@
 
 .app{
 
-    width:min(1400px,95%);
+    width:min(1250px,95%);
 
-    margin:30px auto;
+    margin:18px auto;
 
 }
 
@@ -61,10 +61,10 @@
 
     grid-template-columns:
 
-        360px
+        320px
         1fr;
 
-    gap:24px;
+    gap:16px;
 
     align-items:start;
 
@@ -81,7 +81,7 @@
 
     flex-direction:column;
 
-    gap:22px;
+    gap:16px;
 
 }
 
