@@ -1,1 +1,367 @@
+/* =====================================================
+   RAINFOREST CONSULTA
+   style.css
+   Tema global
+   ===================================================== */
 
+
+/* =====================================================
+   VARIÁVEIS
+   ===================================================== */
+
+:root{
+
+    /* CORES PRINCIPAIS */
+
+    --verde-900:#17472C;
+    --verde-800:#256B40;
+    --verde-700:#2F8B4E;
+    --verde-600:#45A85E;
+    --verde-500:#61C277;
+    --verde-100:#EDF8F0;
+
+    --cinza-900:#1E2930;
+    --cinza-700:#56616A;
+    --cinza-500:#8C959C;
+    --cinza-300:#D7DEE2;
+    --cinza-100:#F5F7F8;
+
+    --branco:#FFFFFF;
+
+    /* STATUS */
+
+    --permitido:#2E7D32;
+    --permitido-fundo:#E8F5E9;
+
+    --proibido:#C62828;
+    --proibido-fundo:#FDECEC;
+
+    --excecao:#F9A825;
+    --excecao-fundo:#FFF8E1;
+
+    --mitigacao:#EF6C00;
+    --mitigacao-fundo:#FFF3E0;
+
+    --aguardando:#607D8B;
+    --aguardando-fundo:#ECEFF1;
+
+    /* GERAL */
+
+    --raio:12px;
+
+    --sombra:
+        0 6px 20px
+        rgba(0,0,0,.08);
+
+}
+
+
+/* =====================================================
+   RESET
+   ===================================================== */
+
+*{
+
+    margin:0;
+    padding:0;
+
+    box-sizing:border-box;
+
+}
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+body{
+
+    background:var(--cinza-100);
+
+    color:var(--cinza-900);
+
+    font-family:
+
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+    font-size:16px;
+
+    line-height:1.45;
+
+}
+
+
+/* =====================================================
+   LINKS
+   ===================================================== */
+
+a{
+
+    color:var(--verde-800);
+
+    text-decoration:none;
+
+}
+
+a:hover{
+
+    text-decoration:underline;
+
+}
+
+
+/* =====================================================
+   TÍTULOS
+   ===================================================== */
+
+h1{
+
+    font-size:34px;
+
+    font-weight:700;
+
+}
+
+h2{
+
+    font-size:26px;
+
+}
+
+h3{
+
+    font-size:20px;
+
+}
+
+h4{
+
+    font-size:18px;
+
+}
+
+
+/* =====================================================
+   TEXTOS
+   ===================================================== */
+
+p{
+
+    color:var(--cinza-700);
+
+}
+
+
+/* =====================================================
+   FORMULÁRIOS
+   ===================================================== */
+
+label{
+
+    display:block;
+
+    margin-bottom:6px;
+
+    font-weight:600;
+
+}
+
+.form-group{
+
+    margin-bottom:18px;
+
+}
+
+.form-control{
+
+    width:100%;
+
+    height:46px;
+
+    padding:0 14px;
+
+    border:
+
+        1px solid
+        var(--cinza-300);
+
+    border-radius:8px;
+
+    background:var(--branco);
+
+    transition:.20s;
+
+    outline:none;
+
+}
+
+.form-control:focus{
+
+    border-color:
+
+        var(--verde-700);
+
+    box-shadow:
+
+        0 0 0 4px
+        rgba(47,139,78,.15);
+
+}
+
+.form-control:disabled{
+
+    background:#F1F3F4;
+
+    color:#8D949A;
+
+}
+
+
+/* =====================================================
+   BOTÕES
+   ===================================================== */
+
+button{
+
+    cursor:pointer;
+
+    border:none;
+
+    transition:.20s;
+
+}
+
+button:disabled{
+
+    cursor:not-allowed;
+
+}
+
+
+/* =====================================================
+   AUTOCOMPLETE
+   ===================================================== */
+
+.suggestions{
+
+    display:none;
+
+    position:absolute;
+
+    width:100%;
+
+    max-height:260px;
+
+    overflow-y:auto;
+
+    background:#FFF;
+
+    border:
+
+        1px solid
+        var(--cinza-300);
+
+    border-radius:8px;
+
+    box-shadow:
+
+        var(--sombra);
+
+    z-index:999;
+
+}
+
+.suggestions div{
+
+    padding:10px 14px;
+
+    cursor:pointer;
+
+    border-bottom:
+
+        1px solid
+        #EFEFEF;
+
+}
+
+.suggestions div:last-child{
+
+    border-bottom:none;
+
+}
+
+.suggestions div:hover{
+
+    background:
+
+        var(--verde-100);
+
+}
+
+
+/* =====================================================
+   MENSAGENS
+   ===================================================== */
+
+.loading{
+
+    display:none;
+
+    margin-top:14px;
+
+    color:
+
+        var(--verde-700);
+
+    font-weight:600;
+
+}
+
+.error-box{
+
+    display:none;
+
+    margin-top:14px;
+
+    padding:12px;
+
+    border-radius:8px;
+
+    color:#8A1E1E;
+
+    background:#FDECEC;
+
+}
+
+
+/* =====================================================
+   UTILITÁRIOS
+   ===================================================== */
+
+.hidden{
+
+    display:none !important;
+
+}
+
+.text-center{
+
+    text-align:center;
+
+}
+
+.text-right{
+
+    text-align:right;
+
+}
+
+.w-100{
+
+    width:100%;
+
+}
