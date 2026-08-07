@@ -1,1 +1,436 @@
+/* =====================================================
+   RAINFOREST CONSULTA
+   cards.css
+   Cards e componentes visuais
+   ===================================================== */
 
+
+/* =====================================================
+   CARD
+   ===================================================== */
+
+.card{
+
+    background:var(--branco);
+
+    border-radius:14px;
+
+    box-shadow:var(--sombra);
+
+    padding:22px;
+
+    overflow:hidden;
+
+    transition:.25s;
+
+}
+
+.card:hover{
+
+    transform:translateY(-2px);
+
+}
+
+
+/* =====================================================
+   TÍTULO DOS CARDS
+   ===================================================== */
+
+.card-title{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:22px;
+
+    padding-bottom:14px;
+
+    border-bottom:
+
+        1px solid
+        var(--cinza-300);
+
+    font-size:20px;
+
+    font-weight:700;
+
+}
+
+
+/* =====================================================
+   BADGES
+   ===================================================== */
+
+.badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:110px;
+
+    height:34px;
+
+    padding:0 16px;
+
+    border-radius:999px;
+
+    color:#FFF;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    letter-spacing:.4px;
+
+}
+
+
+/* =====================================================
+   STATUS
+   ===================================================== */
+
+.badge-success{
+
+    background:
+
+        var(--permitido);
+
+}
+
+.badge-danger{
+
+    background:
+
+        var(--proibido);
+
+}
+
+.badge-warning{
+
+    background:
+
+        var(--excecao);
+
+    color:#222;
+
+}
+
+.badge-orange{
+
+    background:
+
+        var(--mitigacao);
+
+}
+
+.badge-info{
+
+    background:
+
+        var(--aguardando);
+
+}
+
+
+/* =====================================================
+   BANNER PRINCIPAL
+   ===================================================== */
+
+.status-banner{
+
+    border-radius:14px;
+
+    padding:28px;
+
+    margin-bottom:24px;
+
+    box-shadow:var(--sombra);
+
+    transition:.30s;
+
+}
+
+.status-banner .question{
+
+    font-size:19px;
+
+    font-weight:700;
+
+    margin-bottom:12px;
+
+}
+
+.status-banner .answer{
+
+    font-size:28px;
+
+    font-weight:800;
+
+}
+
+
+/* =====================================================
+   CORES DO BANNER
+   ===================================================== */
+
+.status-permitido{
+
+    background:
+
+        var(--permitido-fundo);
+
+    border-left:
+
+        8px solid
+        var(--permitido);
+
+}
+
+.status-permitido .answer{
+
+    color:
+
+        var(--permitido);
+
+}
+
+
+
+.status-proibido{
+
+    background:
+
+        var(--proibido-fundo);
+
+    border-left:
+
+        8px solid
+        var(--proibido);
+
+}
+
+.status-proibido .answer{
+
+    color:
+
+        var(--proibido);
+
+}
+
+
+
+.status-excecao{
+
+    background:
+
+        var(--excecao-fundo);
+
+    border-left:
+
+        8px solid
+        var(--excecao);
+
+}
+
+.status-excecao .answer{
+
+    color:#A96A00;
+
+}
+
+
+
+.status-mitigacao{
+
+    background:
+
+        var(--mitigacao-fundo);
+
+    border-left:
+
+        8px solid
+        var(--mitigacao);
+
+}
+
+.status-mitigacao .answer{
+
+    color:
+
+        var(--mitigacao);
+
+}
+
+
+
+.status-aguardando{
+
+    background:
+
+        var(--aguardando-fundo);
+
+    border-left:
+
+        8px solid
+        var(--aguardando);
+
+}
+
+
+/* =====================================================
+   TEXT BOX
+   ===================================================== */
+
+.text-box{
+
+    border-radius:10px;
+
+    background:#FAFAFA;
+
+    border:
+
+        1px solid
+        var(--cinza-300);
+
+}
+
+
+/* =====================================================
+   PILLS
+   ===================================================== */
+
+.pill{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:
+
+        6px
+        12px;
+
+    border-radius:999px;
+
+    background:
+
+        var(--verde-100);
+
+    color:
+
+        var(--verde-900);
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+
+/* =====================================================
+   CARD PERMITIDO
+   ===================================================== */
+
+.card-permitido{
+
+    border-left:
+
+        7px solid
+        var(--permitido);
+
+}
+
+
+/* =====================================================
+   CARD PROIBIDO
+   ===================================================== */
+
+.card-proibido{
+
+    border-left:
+
+        7px solid
+        var(--proibido);
+
+}
+
+
+/* =====================================================
+   CARD EXCEÇÃO
+   ===================================================== */
+
+.card-excecao{
+
+    border-left:
+
+        7px solid
+        var(--excecao);
+
+}
+
+
+/* =====================================================
+   CARD MITIGAÇÃO
+   ===================================================== */
+
+.card-mitigacao{
+
+    border-left:
+
+        7px solid
+        var(--mitigacao);
+
+}
+
+
+/* =====================================================
+   CARD AGUARDANDO
+   ===================================================== */
+
+.card-aguardando{
+
+    border-left:
+
+        7px solid
+        var(--aguardando);
+
+}
+
+
+/* =====================================================
+   ANIMAÇÃO
+   ===================================================== */
+
+.fade{
+
+    animation:fade .30s;
+
+}
+
+@keyframes fade{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(8px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
