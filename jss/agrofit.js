@@ -111,6 +111,13 @@ async function buscarProdutosAgrofit(
     return [];
   }
 
+  console.log(
+    "Buscando produto:",
+    termoLimpo,
+    "Cultura:",
+    culturaLimpa
+  );
+
   const registros =
     await buscarRegistros(
       TABELA_AGROFIT,
@@ -119,7 +126,7 @@ async function buscarProdutosAgrofit(
           "nr_registro,marca_comercial,cultura,ingrediente_ativo,situacao",
 
         cultura:
-          `eq.${culturaLimpa}`,
+          `ilike.*${culturaLimpa}*`,
 
         marca_comercial:
           `ilike.*${termoLimpo}*`,
@@ -127,7 +134,7 @@ async function buscarProdutosAgrofit(
         order:
           "marca_comercial.asc",
 
-        limit: 30
+        limit: 100
       }
     );
 
@@ -136,6 +143,11 @@ async function buscarProdutosAgrofit(
       "A consulta de produtos não retornou uma lista válida."
     );
   }
+
+  console.log(
+    "Produtos encontrados:",
+    registros
+  );
 
   const produtosUnicos =
     new Map();
@@ -155,10 +167,15 @@ async function buscarProdutosAgrofit(
       normalizarTextoAgrofit(nome);
 
     if (!produtosUnicos.has(chave)) {
+
       produtosUnicos.set(
         chave,
-        registro
+        {
+          ...registro,
+          marca_comercial: nome
+        }
       );
+
     }
 
   });
