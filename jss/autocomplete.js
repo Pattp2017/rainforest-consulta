@@ -1,6 +1,6 @@
 // =====================================================
 // AUTOCOMPLETE
-// Produtos por cultura
+// Busca de produtos pelo nome comercial
 // Projeto: Rainforest Consulta
 // =====================================================
 
@@ -13,6 +13,17 @@ let timerAutocomplete = null;
 
 let produtosAutocomplete = [];
 
+let indiceSugestaoAtiva = -1;
+
+
+// =====================================================
+// CONFIGURAÇÃO
+// =====================================================
+
+const TEMPO_AUTOCOMPLETE = 300;
+
+const MINIMO_CARACTERES_AUTOCOMPLETE = 3;
+
 
 // =====================================================
 // CONFIGURAR AUTOCOMPLETE
@@ -20,15 +31,32 @@ let produtosAutocomplete = [];
 
 function configurarAutocompleteProdutos() {
 
+  if (
+    !elementosUI ||
+    !elementosUI.campoProduto ||
+    !elementosUI.listaSugestoes
+  ) {
+
+    console.warn(
+      "Elementos do autocomplete não encontrados."
+    );
+
+    return;
+
+  }
+
+
   elementosUI.campoProduto.addEventListener(
     "input",
     tratarDigitacaoProduto
   );
 
+
   elementosUI.campoProduto.addEventListener(
     "keydown",
     tratarTeclaProduto
   );
+
 
   document.addEventListener(
     "click",
@@ -47,22 +75,53 @@ function tratarDigitacaoProduto() {
   limparErro();
 
   const termo =
-    elementosUI.campoProduto.value.trim();
+    String(
+      elementosUI.campoProduto.value || ""
+    ).trim();
+
+
+  // ---------------------------------------------------
+  // Sempre que o usuário altera o texto,
+  // o produto anteriormente selecionado deixa
+  // de ser considerado válido.
+  // ---------------------------------------------------
+
+  if (
+    typeof limparProdutoSelecionado === "function"
+  ) {
+
+    limparProdutoSelecionado();
+
+  }
+
 
   limparSugestoesProdutos();
 
-  if (termo.length < 3) {
+
+  if (
+    termo.length <
+    MINIMO_CARACTERES_AUTOCOMPLETE
+  ) {
+
+    ocultarCarregamento();
+
     return;
+
   }
+
 
   clearTimeout(
     timerAutocomplete
   );
 
+
   timerAutocomplete =
     setTimeout(
-      () => executarBuscaAutocomplete(termo),
-      300
+      () =>
+        executarBuscaAutocomplete(
+          termo
+        ),
+      TEMPO_AUTOCOMPLETE
     );
 
 }
@@ -76,12 +135,27 @@ async function executarBuscaAutocomplete(
   termo
 ) {
 
-  const cultura =
-    elementosUI.campoCultura.value.trim();
+  const termoAtual =
+    String(
+      elementosUI.campoProduto.value || ""
+    ).trim();
 
-  if (!cultura) {
+
+  // ---------------------------------------------------
+  // Evita executar consulta antiga caso o usuário
+  // continue digitando durante o debounce.
+  // ---------------------------------------------------
+
+  if (
+    termoAtual !== termo ||
+    termoAtual.length <
+      MINIMO_CARACTERES_AUTOCOMPLETE
+  ) {
+
     return;
+
   }
+
 
   try {
 
@@ -89,15 +163,37 @@ async function executarBuscaAutocomplete(
       "Buscando produtos..."
     );
 
+
     produtosAutocomplete =
       await buscarProdutosAgrofit(
-        cultura,
-        termo
+        termoAtual
       );
+
+
+    /*
+      Confere novamente se o texto do campo
+      continua igual ao termo que originou
+      esta consulta.
+
+      Isso evita mostrar sugestões antigas
+      depois que o usuário já digitou outra coisa.
+    */
+
+    if (
+      String(
+        elementosUI.campoProduto.value || ""
+      ).trim() !== termoAtual
+    ) {
+
+      return;
+
+    }
+
 
     exibirSugestoesProdutos(
       produtosAutocomplete
     );
+
 
   } catch (erro) {
 
@@ -106,10 +202,15 @@ async function executarBuscaAutocomplete(
       erro
     );
 
+
     mostrarErro(
       erro.message ||
       "Não foi possível buscar os produtos."
     );
+
+
+    limparSugestoesProdutos();
+
 
   } finally {
 
@@ -130,42 +231,111 @@ function exibirSugestoesProdutos(
 
   limparSugestoesProdutos();
 
+
   if (
     !Array.isArray(produtos) ||
     produtos.length === 0
   ) {
 
     const item =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
+
+
+    item.className =
+      "suggestion-empty";
+
 
     item.textContent =
       "Nenhum produto encontrado";
 
-    item.className =
-      "suggestion-empty";
 
     elementosUI.listaSugestoes.appendChild(
       item
     );
 
-    elementosUI.listaSugestoes.style.display =
-      "block";
+
+    abrirListaSugestoes();
 
     return;
 
   }
 
+
   produtos.forEach(
-    (produto) => {
+    (produto, indice) => {
 
       const item =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       item.className =
         "suggestion-item";
 
-      item.textContent =
-        produto.marca_comercial;
+
+      item.dataset.indice =
+        String(indice);
+
+
+      // -------------------------------------------------
+      // NOME COMERCIAL
+      // -------------------------------------------------
+
+      const nome =
+        document.createElement(
+          "div"
+        );
+
+
+      nome.className =
+        "suggestion-name";
+
+
+      nome.textContent =
+        produto.marca_comercial ||
+        "Produto sem nome";
+
+
+      item.appendChild(
+        nome
+      );
+
+
+      // -------------------------------------------------
+      // REGISTRO MAPA
+      // -------------------------------------------------
+
+      if (
+        produto.nr_registro
+      ) {
+
+        const registro =
+          document.createElement(
+            "div"
+          );
+
+
+        registro.className =
+          "suggestion-meta";
+
+
+        registro.textContent =
+          `Registro MAPA: ${produto.nr_registro}`;
+
+
+        item.appendChild(
+          registro
+        );
+
+      }
+
+
+      // -------------------------------------------------
+      // CLIQUE
+      // -------------------------------------------------
 
       item.addEventListener(
         "click",
@@ -175,6 +345,7 @@ function exibirSugestoesProdutos(
           )
       );
 
+
       elementosUI.listaSugestoes.appendChild(
         item
       );
@@ -182,8 +353,61 @@ function exibirSugestoesProdutos(
     }
   );
 
+
+  indiceSugestaoAtiva = -1;
+
+  abrirListaSugestoes();
+
+}
+
+
+// =====================================================
+// ABRIR LISTA
+// =====================================================
+
+function abrirListaSugestoes() {
+
   elementosUI.listaSugestoes.style.display =
     "block";
+
+
+  elementosUI.listaSugestoes.classList.add(
+    "show"
+  );
+
+}
+
+
+// =====================================================
+// FECHAR LISTA
+// =====================================================
+
+function limparSugestoesProdutos() {
+
+  if (
+    !elementosUI ||
+    !elementosUI.listaSugestoes
+  ) {
+
+    return;
+
+  }
+
+
+  elementosUI.listaSugestoes.innerHTML =
+    "";
+
+
+  elementosUI.listaSugestoes.style.display =
+    "none";
+
+
+  elementosUI.listaSugestoes.classList.remove(
+    "show"
+  );
+
+
+  indiceSugestaoAtiva = -1;
 
 }
 
@@ -196,19 +420,36 @@ function selecionarProdutoAutocomplete(
   produto
 ) {
 
+  if (!produto) {
+    return;
+  }
+
+
   elementosUI.campoProduto.value =
-    produto.marca_comercial || "";
+    produto.marca_comercial ||
+    "";
+
 
   limparSugestoesProdutos();
 
+
   console.log(
-    "Produto selecionado:",
+    "✔ Produto selecionado:",
     produto
   );
 
-  // Nesta próxima etapa
-  // chamaremos a consulta completa
-  // Agrofit + Rainforest.
+
+  /*
+    A partir daqui começa a nova etapa:
+
+    Produto
+        ↓
+    Culturas do produto
+        ↓
+    Usuário seleciona cultura
+        ↓
+    Classificação Rainforest
+  */
 
   if (
     typeof tratarProdutoSelecionado ===
@@ -232,13 +473,237 @@ function tratarTeclaProduto(
   evento
 ) {
 
+  const itens =
+    obterItensSugestoes();
+
+
+  // ---------------------------------------------------
+  // ESC
+  // ---------------------------------------------------
+
   if (
-    evento.key === "Escape"
+    evento.key ===
+    "Escape"
   ) {
 
     limparSugestoesProdutos();
 
+    return;
+
   }
+
+
+  // ---------------------------------------------------
+  // SETA PARA BAIXO
+  // ---------------------------------------------------
+
+  if (
+    evento.key ===
+    "ArrowDown"
+  ) {
+
+    if (
+      itens.length === 0
+    ) {
+      return;
+    }
+
+
+    evento.preventDefault();
+
+
+    indiceSugestaoAtiva += 1;
+
+
+    if (
+      indiceSugestaoAtiva >=
+      itens.length
+    ) {
+
+      indiceSugestaoAtiva =
+        0;
+
+    }
+
+
+    atualizarSugestaoAtiva(
+      itens
+    );
+
+    return;
+
+  }
+
+
+  // ---------------------------------------------------
+  // SETA PARA CIMA
+  // ---------------------------------------------------
+
+  if (
+    evento.key ===
+    "ArrowUp"
+  ) {
+
+    if (
+      itens.length === 0
+    ) {
+      return;
+    }
+
+
+    evento.preventDefault();
+
+
+    indiceSugestaoAtiva -= 1;
+
+
+    if (
+      indiceSugestaoAtiva < 0
+    ) {
+
+      indiceSugestaoAtiva =
+        itens.length - 1;
+
+    }
+
+
+    atualizarSugestaoAtiva(
+      itens
+    );
+
+    return;
+
+  }
+
+
+  // ---------------------------------------------------
+  // ENTER
+  // ---------------------------------------------------
+
+  if (
+    evento.key ===
+    "Enter"
+  ) {
+
+    /*
+      Se há uma sugestão destacada,
+      seleciona aquela sugestão.
+    */
+
+    if (
+      indiceSugestaoAtiva >= 0 &&
+      itens[indiceSugestaoAtiva]
+    ) {
+
+      evento.preventDefault();
+
+
+      const indice =
+        Number(
+          itens[
+            indiceSugestaoAtiva
+          ].dataset.indice
+        );
+
+
+      const produto =
+        produtosAutocomplete[
+          indice
+        ];
+
+
+      selecionarProdutoAutocomplete(
+        produto
+      );
+
+      return;
+
+    }
+
+
+    /*
+      Se não existe sugestão destacada,
+      o botão BUSCAR pode assumir a consulta.
+    */
+
+    if (
+      typeof executarBuscaManual ===
+      "function"
+    ) {
+
+      evento.preventDefault();
+
+      executarBuscaManual();
+
+    }
+
+  }
+
+}
+
+
+// =====================================================
+// OBTER ITENS
+// =====================================================
+
+function obterItensSugestoes() {
+
+  if (
+    !elementosUI ||
+    !elementosUI.listaSugestoes
+  ) {
+
+    return [];
+
+  }
+
+
+  return Array.from(
+    elementosUI.listaSugestoes.querySelectorAll(
+      ".suggestion-item"
+    )
+  );
+
+}
+
+
+// =====================================================
+// ATUALIZAR ITEM ATIVO
+// =====================================================
+
+function atualizarSugestaoAtiva(
+  itens
+) {
+
+  itens.forEach(
+    (item, indice) => {
+
+      if (
+        indice ===
+        indiceSugestaoAtiva
+      ) {
+
+        item.classList.add(
+          "active"
+        );
+
+
+        item.scrollIntoView(
+          {
+            block: "nearest"
+          }
+        );
+
+      } else {
+
+        item.classList.remove(
+          "active"
+        );
+
+      }
+
+    }
+  );
 
 }
 
@@ -258,8 +723,11 @@ function tratarCliqueForaAutocomplete(
       evento.target
     )
   ) {
+
     return;
+
   }
+
 
   limparSugestoesProdutos();
 
