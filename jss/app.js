@@ -1,163 +1,460 @@
 // =====================================================
-// APLICAÇÃO
-// Inicialização e controle principal do sistema
+// INTERFACE DO USUÁRIO
+// Atualização dos elementos visuais da página
 // Projeto: Rainforest Consulta
 // =====================================================
 
-// -----------------------------------------------------
-// INICIALIZAÇÃO
-// -----------------------------------------------------
 
-document.addEventListener(
-  "DOMContentLoaded",
-  iniciarSistema
-);
+// =====================================================
+// ELEMENTOS DA TELA
+// =====================================================
 
-// -----------------------------------------------------
-// INICIAR SISTEMA
-// -----------------------------------------------------
+const elementosUI = {
 
-async function iniciarSistema() {
-  console.clear();
+  campoProduto:
+    document.getElementById("campoProduto"),
 
-  exibirCabecalhoConsole();
+  btnBuscar:
+    document.getElementById("btnBuscar"),
 
-  try {
-    validarElementosUI();
+  listaSugestoes:
+    document.getElementById("listaSugestoes"),
 
-    configurarEstadoInicial();
+  blocoCulturas:
+    document.getElementById("blocoCulturas"),
 
-    mostrarCarregamento(
-      "Conectando ao banco de dados..."
-    );
+  listaCulturas:
+    document.getElementById("listaCulturas"),
 
-    console.log(
-      "Conectando ao Supabase..."
-    );
+  mensagemCarregamento:
+    document.getElementById("mensagemCarregamento"),
 
-    await testarConexaoSupabase();
+  mensagemErro:
+    document.getElementById("mensagemErro"),
 
-    console.log(
-      "✔ Conexão realizada com sucesso."
-    );
+  respostaPrincipal:
+    document.getElementById("respostaPrincipal"),
 
-    mostrarCarregamento(
-      "Carregando culturas..."
-    );
+  nomeComercial:
+    document.getElementById("nomeComercial"),
 
-    console.log(
-      "Carregando culturas..."
-    );
+  registroMapa:
+    document.getElementById("registroMapa"),
 
-    const culturas =
-      await carregarCulturas();
+  ingredienteAtivo:
+    document.getElementById("ingredienteAtivo"),
 
-    popularSelectCulturas(culturas);
+  classeAgronomica:
+    document.getElementById("classeAgronomica"),
 
-    configurarEventosDoSistema();
+  pragasAlvos:
+    document.getElementById("pragasAlvos"),
 
-    console.log(
-      `✔ ${culturas.length} culturas carregadas.`
-    );
+  perguntaCultura:
+    document.getElementById("perguntaCultura"),
 
-    console.table(culturas);
-  } catch (erro) {
-    console.error(
-      "✖ Não foi possível iniciar o sistema.",
-      erro
-    );
+  respostaCultura:
+    document.getElementById("respostaCultura"),
 
-    mostrarFalhaCulturas();
+  detalhamentoCondicoes:
+    document.getElementById("detalhamentoCondicoes")
+};
 
-    mostrarErro(
-      obterMensagemErro(erro)
-    );
-  } finally {
-    ocultarCarregamento();
-  }
-}
 
-// -----------------------------------------------------
-// CONFIGURAR ESTADO INICIAL
-// -----------------------------------------------------
+// =====================================================
+// VALIDAR ELEMENTOS
+// =====================================================
 
-function configurarEstadoInicial() {
-  limparErro();
+function validarElementosUI() {
 
-  elementosUI.campoCultura.disabled = true;
+  const elementosAusentes = [];
 
-  desabilitarCampoProduto();
-}
+  Object.entries(elementosUI).forEach(
+    ([nome, elemento]) => {
 
-// -----------------------------------------------------
-// CONFIGURAR EVENTOS
-// -----------------------------------------------------
+      if (!elemento) {
+        elementosAusentes.push(nome);
+      }
 
-function configurarEventosDoSistema() {
-
-  elementosUI.campoCultura.addEventListener(
-    "change",
-    tratarAlteracaoCultura
+    }
   );
 
-  configurarAutocompleteProdutos();
+  if (elementosAusentes.length > 0) {
+
+    throw new Error(
+      "Elementos não encontrados no index.html: " +
+      elementosAusentes.join(", ")
+    );
+
+  }
 
 }
 
-// -----------------------------------------------------
-// ALTERAÇÃO DA CULTURA
-// -----------------------------------------------------
 
-function tratarAlteracaoCultura() {
-  limparErro();
+// =====================================================
+// CARREGAMENTO
+// =====================================================
 
-  const culturaSelecionada =
-    elementosUI.campoCultura.value.trim();
+function mostrarCarregamento(
+  mensagem = "Consultando dados..."
+) {
 
-  if (!culturaSelecionada) {
-    desabilitarCampoProduto();
+  elementosUI.mensagemCarregamento.textContent =
+    mensagem;
 
+  elementosUI.mensagemCarregamento.classList.remove(
+    "hidden"
+  );
+
+  elementosUI.mensagemCarregamento.style.display =
+    "block";
+
+}
+
+
+function ocultarCarregamento() {
+
+  elementosUI.mensagemCarregamento.classList.add(
+    "hidden"
+  );
+
+  elementosUI.mensagemCarregamento.style.display =
+    "none";
+
+}
+
+
+// =====================================================
+// ERRO
+// =====================================================
+
+function mostrarErro(mensagem) {
+
+  elementosUI.mensagemErro.textContent =
+    mensagem ||
+    "Ocorreu um erro inesperado.";
+
+  elementosUI.mensagemErro.classList.remove(
+    "hidden"
+  );
+
+  elementosUI.mensagemErro.style.display =
+    "block";
+
+}
+
+
+function limparErro() {
+
+  elementosUI.mensagemErro.textContent = "";
+
+  elementosUI.mensagemErro.classList.add(
+    "hidden"
+  );
+
+  elementosUI.mensagemErro.style.display =
+    "none";
+
+}
+
+
+// =====================================================
+// PRODUTO SELECIONADO
+// =====================================================
+
+function preencherProdutoBasico(produto) {
+
+  elementosUI.nomeComercial.textContent =
+    produto?.marca_comercial || "-";
+
+  elementosUI.registroMapa.textContent =
+    produto?.nr_registro || "-";
+
+  elementosUI.ingredienteAtivo.textContent =
+    produto?.ingrediente_ativo || "-";
+
+  elementosUI.classeAgronomica.textContent =
+    produto?.classe || "-";
+
+}
+
+
+// =====================================================
+// PRODUTO CONSOLIDADO
+// =====================================================
+
+function preencherProdutoConsolidado(produto) {
+
+  if (!produto) {
+    limparDadosProduto();
     return;
   }
 
-  habilitarCampoProduto();
+  elementosUI.nomeComercial.textContent =
+    produto.marca_comercial || "-";
 
-  console.log(
-    "Cultura selecionada:",
-    culturaSelecionada
-  );
+  elementosUI.registroMapa.textContent =
+    produto.nr_registro || "-";
+
+  elementosUI.ingredienteAtivo.textContent =
+    produto.ingrediente_ativo || "-";
+
+  elementosUI.classeAgronomica.textContent =
+    produto.classe || "-";
+
+  elementosUI.pragasAlvos.textContent =
+    produto.pragas_alvos || "-";
+
 }
 
-// -----------------------------------------------------
-// MENSAGEM DE ERRO
-// -----------------------------------------------------
 
-function obterMensagemErro(erro) {
-  if (erro instanceof Error) {
-    return erro.message;
+// =====================================================
+// LIMPAR PRODUTO
+// =====================================================
+
+function limparDadosProduto() {
+
+  elementosUI.nomeComercial.textContent = "-";
+  elementosUI.registroMapa.textContent = "-";
+  elementosUI.ingredienteAtivo.textContent = "-";
+  elementosUI.classeAgronomica.textContent = "-";
+  elementosUI.pragasAlvos.textContent = "-";
+
+}
+
+
+// =====================================================
+// CULTURAS
+// =====================================================
+
+function exibirCulturasProduto(
+  culturas,
+  callbackSelecao
+) {
+
+  elementosUI.listaCulturas.innerHTML = "";
+
+  if (
+    !Array.isArray(culturas) ||
+    culturas.length === 0
+  ) {
+
+    elementosUI.blocoCulturas.classList.add(
+      "hidden"
+    );
+
+    return;
+
   }
 
-  return String(
-    erro || "Erro inesperado."
+  culturas.forEach((cultura) => {
+
+    const botao =
+      document.createElement("button");
+
+    botao.type = "button";
+
+    botao.className =
+      "culture-button";
+
+    botao.textContent =
+      cultura;
+
+    botao.dataset.cultura =
+      cultura;
+
+    botao.addEventListener(
+      "click",
+      () => {
+
+        marcarCulturaSelecionada(
+          botao
+        );
+
+        if (
+          typeof callbackSelecao ===
+          "function"
+        ) {
+
+          callbackSelecao(
+            cultura
+          );
+
+        }
+
+      }
+    );
+
+    elementosUI.listaCulturas.appendChild(
+      botao
+    );
+
+  });
+
+  elementosUI.blocoCulturas.classList.remove(
+    "hidden"
   );
+
 }
 
-// -----------------------------------------------------
-// CABEÇALHO DO CONSOLE
-// -----------------------------------------------------
 
-function exibirCabecalhoConsole() {
-  console.log(
-    "======================================"
+// =====================================================
+// MARCAR CULTURA SELECIONADA
+// =====================================================
+
+function marcarCulturaSelecionada(
+  botaoSelecionado
+) {
+
+  const botoes =
+    elementosUI.listaCulturas.querySelectorAll(
+      ".culture-button"
+    );
+
+  botoes.forEach((botao) => {
+
+    botao.classList.remove(
+      "active",
+      "selecionada"
+    );
+
+  });
+
+  botaoSelecionado.classList.add(
+    "active",
+    "selecionada"
   );
 
-  console.log(
-    " Rainforest Consulta"
+}
+
+
+// =====================================================
+// LIMPAR CULTURAS
+// =====================================================
+
+function limparCulturasProduto() {
+
+  elementosUI.listaCulturas.innerHTML = "";
+
+  elementosUI.blocoCulturas.classList.add(
+    "hidden"
   );
 
-  console.log(
-    "======================================"
+}
+
+
+// =====================================================
+// CLASSIFICAÇÃO
+// =====================================================
+
+function definirClassificacao(
+  texto,
+  classeEstado = "aguardando"
+) {
+
+  const elemento =
+    elementosUI.respostaPrincipal;
+
+  elemento.textContent =
+    texto || "AGUARDANDO CONSULTA";
+
+  elemento.className =
+    "classificacao-resultado";
+
+  elemento.classList.add(
+    classeEstado
   );
 
-  console.log("");
+}
+
+
+// =====================================================
+// PODE UTILIZAR?
+// =====================================================
+
+function definirPermissaoCultura(
+  cultura,
+  resposta,
+  classeEstado = "aguardando"
+) {
+
+  const nomeCultura =
+    String(cultura || "").trim();
+
+  if (nomeCultura) {
+
+    elementosUI.perguntaCultura.textContent =
+      `Pode utilizar para ${nomeCultura}?`;
+
+  } else {
+
+    elementosUI.perguntaCultura.textContent =
+      "Pode utilizar para a cultura selecionada?";
+
+  }
+
+  elementosUI.respostaCultura.textContent =
+    resposta || "AGUARDANDO";
+
+  elementosUI.respostaCultura.className =
+    "permissao-resposta";
+
+  elementosUI.respostaCultura.classList.add(
+    classeEstado
+  );
+
+}
+
+
+// =====================================================
+// DETALHAMENTO / CONDIÇÕES
+// =====================================================
+
+function definirDetalhamentoCondicoes(
+  texto
+) {
+
+  elementosUI.detalhamentoCondicoes.textContent =
+    texto ||
+    "Nenhuma condição adicional informada.";
+
+}
+
+
+// =====================================================
+// RESET DO RESULTADO
+// =====================================================
+
+function resetarResultadoConsulta() {
+
+  definirClassificacao(
+    "AGUARDANDO CONSULTA",
+    "aguardando"
+  );
+
+  definirPermissaoCultura(
+    "",
+    "AGUARDANDO",
+    "aguardando"
+  );
+
+  definirDetalhamentoCondicoes(
+    "Selecione um produto e uma cultura para visualizar as condições aplicáveis."
+  );
+
+  limparDadosProduto();
+
+}
+
+
+// =====================================================
+// LIMPAR PRODUTO SELECIONADO
+// =====================================================
+
+function limparProdutoSelecionado() {
+
+  limparCulturasProduto();
+
+  resetarResultadoConsulta();
+
 }
