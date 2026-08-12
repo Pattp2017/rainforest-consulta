@@ -396,3 +396,48 @@ body {
     font-size: 16px;
   }
 }
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  padding: 10px 14px;
+
+  cursor: pointer;
+
+  border-bottom: 1px solid rgba(20, 52, 86, 0.08);
+}
+
+.suggestion-name {
+  flex: 1;
+
+  min-width: 0;
+
+  font-weight: 600;
+  color: #173b63;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestion-mapa {
+  flex: 0 0 auto;
+
+  min-width: 105px;
+
+  padding-left: 18px;
+
+  text-align: right;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  color: #66788a;
+}
+
+.suggestion-item:hover {
+  background: #eef6fb;
+}
