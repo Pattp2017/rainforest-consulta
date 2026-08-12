@@ -72,8 +72,8 @@ async function buscarProdutosAgrofit(termo) {
   );
 
   const registros =
-    await buscarRegistros(
-      TABELA_AGROFIT,
+await buscarRegistros(
+  "agrofit_produtos_busca",
       {
         select:
           "nr_registro,marca_comercial,ingrediente_ativo,classe,situacao",
