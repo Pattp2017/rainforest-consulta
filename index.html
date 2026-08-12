@@ -25,26 +25,43 @@
       <!-- COLUNA ESQUERDA -->
       <aside>
 
-        <section class="card">
-          <div class="card-title">
-            🔎 Parâmetros de consulta
+    <section class="card">
+      <div class="card-title">
+        🔎 Parâmetros de consulta
+      </div>
+    
+      <div class="form-group">
+        <label for="campoProduto">
+          1. Digite o nome comercial
+        </label>
+    
+        <input
+          id="campoProduto"
+          class="form-control"
+          type="text"
+          autocomplete="off"
+          placeholder="Digite ao menos 3 letras"
+        />
+    
+        <div
+          id="listaSugestoes"
+          class="suggestions"
+        ></div>
+      </div>
           </div>
-
-          <div class="form-group">
-            <label for="campoCultura">
-              1. Selecione a cultura
+          <div
+            id="blocoCulturas"
+            class="form-group hidden"
+          >
+            <label>
+              2. Cultura
             </label>
-
-            <select
-              id="campoCultura"
-              class="form-control"
-            >
-              <option value="">
-                Carregando culturas...
-              </option>
-            </select>
+          
+            <div
+              id="listaCulturas"
+              class="culture-options"
+            ></div>
           </div>
-
           <div class="form-group">
             <label for="campoProduto">
               2. Digite o nome comercial
