@@ -1,367 +1,409 @@
-/* =====================================================
-   RAINFOREST CONSULTA
-   style.css
-   Tema global
-   ===================================================== */
+/* =========================================================
+   VARIÁVEIS GERAIS
+========================================================= */
 
+:root {
+  --azul-principal: #173a5e;
+  --azul-secundario: #24577f;
+  --azul-claro: #eaf2f7;
 
-/* =====================================================
-   VARIÁVEIS
-   ===================================================== */
+  --verde: #4f8b68;
+  --laranja: #f4a261;
+  --amarelo: #f2cf63;
+  --vermelho: #8f1d1d;
 
-:root{
+  --texto-principal: #1f2d38;
+  --texto-secundario: #526574;
 
-    /* CORES PRINCIPAIS */
+  --branco: #ffffff;
 
-    --verde-900:#17472C;
-    --verde-800:#256B40;
-    --verde-700:#2F8B4E;
-    --verde-600:#45A85E;
-    --verde-500:#61C277;
-    --verde-100:#EDF8F0;
+  --borda-suave: rgba(23, 58, 94, 0.14);
 
-    --cinza-900:#1E2930;
-    --cinza-700:#56616A;
-    --cinza-500:#8C959C;
-    --cinza-300:#D7DEE2;
-    --cinza-100:#F5F7F8;
-
-    --branco:#FFFFFF;
-
-    /* STATUS */
-
-    --permitido:#2E7D32;
-    --permitido-fundo:#E8F5E9;
-
-    --proibido:#C62828;
-    --proibido-fundo:#FDECEC;
-
-    --excecao:#F9A825;
-    --excecao-fundo:#FFF8E1;
-
-    --mitigacao:#EF6C00;
-    --mitigacao-fundo:#FFF3E0;
-
-    --aguardando:#607D8B;
-    --aguardando-fundo:#ECEFF1;
-
-    /* GERAL */
-
-    --raio:12px;
-
-    --sombra:
-        0 6px 20px
-        rgba(0,0,0,.08);
-
+  --sombra:
+    0 12px 32px rgba(20, 52, 86, 0.16);
 }
 
 
-/* =====================================================
+/* =========================================================
    RESET
-   ===================================================== */
+========================================================= */
 
-*{
-
-    margin:0;
-    padding:0;
-
-    box-sizing:border-box;
-
+html {
+  scroll-behavior: smooth;
 }
 
-html{
+body {
+  margin: 0;
 
-    scroll-behavior:smooth;
+  font-family:
+    "Segoe UI",
+    Arial,
+    Helvetica,
+    sans-serif;
 
-}
+  color: var(--texto-principal);
 
-body{
+  background:
+    linear-gradient(
+      rgba(235, 243, 248, 0.68),
+      rgba(235, 243, 248, 0.72)
+    ),
+    url("../img/cafe-bg.jpg");
 
-    background:var(--cinza-100);
-
-    color:var(--cinza-900);
-
-    font-family:
-
-        "Segoe UI",
-        Roboto,
-        Arial,
-        sans-serif;
-
-    font-size:15px;
-
-    line-height:1.45;
-
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 
-/* =====================================================
-   LINKS
-   ===================================================== */
+/* =========================================================
+   CABEÇALHO
+========================================================= */
 
-a{
+.header {
+  padding: 14px 18px;
 
-    color:var(--verde-800);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(18, 52, 86, 0.96),
+      rgba(27, 78, 117, 0.94)
+    );
 
-    text-decoration:none;
+  border-radius: 14px;
 
+  box-shadow: var(--sombra);
+
+  color: var(--branco);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-a:hover{
+.header h1 {
+  font-size: 1.55rem;
+  font-weight: 800;
 
-    text-decoration:underline;
-
+  letter-spacing: 0.01em;
 }
 
+.header span {
+  font-size: 0.92rem;
 
-/* =====================================================
-   TÍTULOS
-   ===================================================== */
-
-h1{
-
-    font-size:30px;
-
-    font-weight:700;
-
-}
-
-h2{
-
-    font-size:26px;
-
-}
-
-h3{
-
-    font-size:20px;
-
-}
-
-h4{
-
-    font-size:18px;
-
+  color: rgba(255, 255, 255, 0.88);
 }
 
 
-/* =====================================================
-   TEXTOS
-   ===================================================== */
-
-p{
-
-    color:var(--cinza-700);
-
-}
-
-
-/* =====================================================
+/* =========================================================
    FORMULÁRIOS
-   ===================================================== */
+========================================================= */
 
-label{
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 700;
 
-    display:block;
-
-    margin-bottom:6px;
-
-    font-weight:600;
-
+  color: var(--azul-principal);
 }
 
-.form-group{
+.form-control {
+  padding: 11px 13px;
 
-    margin-bottom:18px;
+  font-size: 0.95rem;
 
+  color: var(--texto-principal);
+
+  background:
+    rgba(255, 255, 255, 0.92);
+
+  border:
+    1px solid var(--borda-suave);
+
+  border-radius: 10px;
+
+  outline: none;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
 }
 
-.form-control{
-
-    width:100%;
-
-    height:46px;
-
-    padding:0 14px;
-
-    border:
-
-        1px solid
-        var(--cinza-300);
-
-    border-radius:8px;
-
-    background:var(--branco);
-
-    transition:.20s;
-
-    outline:none;
-
+.form-control::placeholder {
+  color: #80909c;
 }
 
-.form-control:focus{
-
-    border-color:
-
-        var(--verde-700);
-
-    box-shadow:
-
-        0 0 0 4px
-        rgba(47,139,78,.15);
-
+.form-control:hover {
+  border-color:
+    rgba(23, 58, 94, 0.30);
 }
 
-.form-control:disabled{
+.form-control:focus {
+  background: #ffffff;
 
-    background:#F1F3F4;
+  border-color: #2a719d;
 
-    color:#8D949A;
-
+  box-shadow:
+    0 0 0 3px rgba(42, 113, 157, 0.14);
 }
 
 
-/* =====================================================
-   BOTÕES
-   ===================================================== */
+/* =========================================================
+   BOTÃO BUSCAR
+========================================================= */
 
-button{
+.btn-buscar {
+  border: 1px solid #39c5e7;
 
-    cursor:pointer;
+  border-radius: 11px;
 
-    border:none;
+  background:
+    linear-gradient(
+      135deg,
+      #153f68,
+      #0c668e
+    );
 
-    transition:.20s;
+  color: #d9f8ff;
 
+  font-size: 0.93rem;
+  font-weight: 800;
+
+  letter-spacing: 0.03em;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 0 0 2px rgba(46, 199, 232, 0.12),
+    0 6px 14px rgba(15, 94, 133, 0.24);
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    filter 0.15s ease;
 }
 
-button:disabled{
+.btn-buscar:hover {
+  transform: translateY(-1px);
 
-    cursor:not-allowed;
+  filter: brightness(1.08);
 
+  box-shadow:
+    0 0 0 3px rgba(46, 199, 232, 0.18),
+    0 8px 20px rgba(15, 94, 133, 0.28);
+}
+
+.btn-buscar:active {
+  transform: translateY(0);
+}
+
+.btn-buscar:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+
+  transform: none;
+
+  box-shadow: none;
 }
 
 
-/* =====================================================
+/* =========================================================
    AUTOCOMPLETE
-   ===================================================== */
+========================================================= */
 
-.suggestions{
+.suggestions {
+  display: none;
 
-    display:none;
+  background:
+    rgba(255, 255, 255, 0.98);
 
-    position:absolute;
+  border:
+    1px solid var(--borda-suave);
 
-    width:100%;
+  border-radius: 10px;
 
-    max-height:260px;
+  box-shadow:
+    0 10px 24px rgba(20, 52, 86, 0.16);
 
-    overflow-y:auto;
-
-    background:#FFF;
-
-    border:
-
-        1px solid
-        var(--cinza-300);
-
-    border-radius:8px;
-
-    box-shadow:
-
-        var(--sombra);
-
-    z-index:999;
-
+  overflow: hidden;
 }
 
-.suggestions div{
-
-    padding:10px 14px;
-
-    cursor:pointer;
-
-    border-bottom:
-
-        1px solid
-        #EFEFEF;
-
+.suggestions.active,
+.suggestions.show {
+  display: block;
 }
 
-.suggestions div:last-child{
+.suggestion-item {
+  padding: 10px 12px;
 
-    border-bottom:none;
+  font-size: 0.9rem;
 
+  color: var(--texto-principal);
+
+  cursor: pointer;
+
+  border-bottom:
+    1px solid rgba(23, 58, 94, 0.06);
+
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
 }
 
-.suggestions div:hover{
+.suggestion-item:last-child {
+  border-bottom: none;
+}
 
-    background:
+.suggestion-item:hover,
+.suggestion-item.active {
+  background: #edf5fa;
 
-        var(--verde-100);
-
+  color: var(--azul-principal);
 }
 
 
-/* =====================================================
-   MENSAGENS
-   ===================================================== */
+/* =========================================================
+   BLOCO CULTURA
+========================================================= */
 
-.loading{
+.bloco-culturas {
+  padding-top: 12px;
 
-    display:none;
-
-    margin-top:14px;
-
-    color:
-
-        var(--verde-700);
-
-    font-weight:600;
-
+  border-top:
+    1px solid rgba(23, 58, 94, 0.10);
 }
 
-.error-box{
+.culture-title {
+  color: var(--azul-principal);
 
-    display:none;
-
-    margin-top:14px;
-
-    padding:12px;
-
-    border-radius:8px;
-
-    color:#8A1E1E;
-
-    background:#FDECEC;
-
+  letter-spacing: 0.01em;
 }
 
 
-/* =====================================================
-   UTILITÁRIOS
-   ===================================================== */
+/* =========================================================
+   ELEMENTOS DE STATUS
+========================================================= */
 
-.hidden{
-
-    display:none !important;
-
+.aguardando {
+  opacity: 0.96;
 }
 
-.text-center{
-
-    text-align:center;
-
+.proibido {
+  font-weight: 800;
 }
 
-.text-right{
-
-    text-align:right;
-
+.uso-excepcional {
+  font-weight: 800;
 }
 
-.w-100{
+.mitigacao {
+  font-weight: 800;
+}
 
-    width:100%;
+.liberado,
+.sem-restricao {
+  font-weight: 800;
+}
 
+
+/* =========================================================
+   LEGAL FOOTER
+========================================================= */
+
+.legal-footer {
+  padding-top: 12px;
+
+  border-top:
+    1px solid rgba(23, 58, 94, 0.10);
+
+  color: var(--texto-secundario);
+
+  font-size: 0.84rem;
+}
+
+.legal-footer strong {
+  color: var(--azul-principal);
+}
+
+
+/* =========================================================
+   SELEÇÃO DE TEXTO
+========================================================= */
+
+::selection {
+  background:
+    rgba(42, 113, 157, 0.22);
+
+  color: var(--azul-principal);
+}
+
+
+/* =========================================================
+   BARRA DE ROLAGEM
+========================================================= */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background:
+    rgba(229, 236, 241, 0.8);
+}
+
+::-webkit-scrollbar-thumb {
+  background:
+    rgba(53, 86, 110, 0.42);
+
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background:
+    rgba(53, 86, 110, 0.62);
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE
+========================================================= */
+
+@media (max-width: 850px) {
+
+  body {
+    background-attachment: scroll;
+  }
+
+  .header {
+    padding: 12px 14px;
+  }
+
+  .header h1 {
+    font-size: 1.28rem;
+  }
+
+  .header span {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 520px) {
+
+  .header {
+    border-radius: 10px;
+  }
+
+  .header h1 {
+    font-size: 1.15rem;
+  }
+
+  .btn-buscar {
+    font-size: 0.88rem;
+  }
+
+  .form-control {
+    font-size: 16px;
+  }
 }
