@@ -20,7 +20,6 @@
     ====================================================== -->
     <header class="header">
       <h1>🌱 Validador Rainforest Alliance / MAPA</h1>
-
       <span>
         Consulte o produto, selecione a cultura e verifique sua classificação.
       </span>
@@ -28,7 +27,7 @@
 
 
     <!-- =====================================================
-         ÁREA PRINCIPAL
+         CONTEÚDO PRINCIPAL
     ====================================================== -->
     <section class="consulta-container">
 
@@ -76,9 +75,7 @@
         </div>
 
 
-        <!-- =================================================
-             CULTURAS ENCONTRADAS
-        ================================================== -->
+        <!-- CULTURA -->
         <div
           id="blocoCulturas"
           class="bloco-culturas hidden"
@@ -91,15 +88,12 @@
           <div
             id="listaCulturas"
             class="culture-options"
-          >
-          </div>
+          ></div>
 
         </div>
 
 
-        <!-- =================================================
-             MENSAGENS
-        ================================================== -->
+        <!-- CARREGAMENTO -->
         <div
           id="mensagemCarregamento"
           class="loading hidden"
@@ -107,18 +101,19 @@
           Consultando dados...
         </div>
 
+
+        <!-- ERRO -->
         <div
           id="mensagemErro"
           class="error-box hidden"
-        >
-        </div>
+        ></div>
 
       </section>
 
 
 
       <!-- ===================================================
-           CLASSIFICAÇÃO PRINCIPAL
+           CLASSIFICAÇÃO
       ==================================================== -->
       <section
         id="cardClassificacaoPrincipal"
@@ -126,7 +121,7 @@
       >
 
         <div class="classificacao-label">
-          🍃 Classificação
+          🍃 CLASSIFICAÇÃO
         </div>
 
         <div
@@ -141,7 +136,7 @@
 
 
       <!-- ===================================================
-           PRODUTO & COMPOSIÇÃO
+           PRODUTO
       ==================================================== -->
       <section
         id="cardProduto"
@@ -149,12 +144,11 @@
       >
 
         <div class="card-title">
-          📦 Produto & composição
+          📦 Produto
         </div>
 
 
         <div class="data-row">
-
           <span class="data-label">
             Nome comercial
           </span>
@@ -165,12 +159,10 @@
           >
             -
           </span>
-
         </div>
 
 
         <div class="data-row">
-
           <span class="data-label">
             Registro MAPA
           </span>
@@ -181,30 +173,10 @@
           >
             -
           </span>
-
         </div>
 
 
         <div class="data-row">
-
-          <span class="data-label">
-            Situação MAPA
-          </span>
-
-          <span
-            id="situacaoMapa"
-            class="data-value"
-          >
-            <span class="badge badge-info">
-              AGUARDANDO
-            </span>
-          </span>
-
-        </div>
-
-
-        <div class="data-row">
-
           <span class="data-label">
             Ingrediente(s) ativo(s)
           </span>
@@ -215,44 +187,10 @@
           >
             -
           </span>
-
         </div>
 
 
         <div class="data-row">
-
-          <span class="data-label">
-            Número CAS
-          </span>
-
-          <span
-            id="numeroCas"
-            class="data-value"
-          >
-            -
-          </span>
-
-        </div>
-
-
-        <div class="data-row">
-
-          <span class="data-label">
-            Titular do registro
-          </span>
-
-          <span
-            id="titularRegistro"
-            class="data-value"
-          >
-            -
-          </span>
-
-        </div>
-
-
-        <div class="data-row">
-
           <span class="data-label">
             Classe agronômica
           </span>
@@ -263,12 +201,10 @@
           >
             -
           </span>
-
         </div>
 
 
         <div class="data-row">
-
           <span class="data-label">
             Pragas / alvos
           </span>
@@ -279,7 +215,6 @@
           >
             -
           </span>
-
         </div>
 
       </section>
@@ -317,320 +252,25 @@
 
 
       <!-- ===================================================
-           DIRETRIZES & CLASSIFICAÇÃO
+           DETALHAMENTO / CONDIÇÕES
       ==================================================== -->
       <section
-        id="cardClassificacao"
+        id="cardDetalhamento"
         class="card"
       >
 
         <div class="card-title">
-
-          <span>
-            🛡️ Diretrizes & classificação
-          </span>
-
-          <span
-            id="badgeClassificacao"
-            class="badge badge-info"
-          >
-            AGUARDANDO
-          </span>
-
-        </div>
-
-
-        <div class="data-row">
-
-          <span class="data-label">
-            Componente responsável
-          </span>
-
-          <span
-            id="componenteResponsavel"
-            class="data-value"
-          >
-            -
-          </span>
-
-        </div>
-
-
-        <div class="data-row">
-
-          <span class="data-label">
-            Classificação de toxicidade
-          </span>
-
-          <span
-            id="classificacaoToxicidade"
-            class="data-value"
-          >
-            -
-          </span>
-
-        </div>
-
-
-        <div class="data-row">
-
-          <span class="data-label">
-            Grupo
-          </span>
-
-          <span
-            id="grupoRainforest"
-            class="data-value"
-          >
-            -
-          </span>
-
-        </div>
-
-
-        <div class="data-row">
-
-          <span class="data-label">
-            Motivo da restrição
-          </span>
-
-          <span
-            id="motivoRestricao"
-            class="data-value"
-          >
-            -
-          </span>
-
-        </div>
-
-      </section>
-
-
-
-      <!-- ===================================================
-           USO EXCEPCIONAL
-      ==================================================== -->
-      <section
-        id="cardUsoExcepcional"
-        class="card hidden"
-      >
-
-        <div class="card-title">
-          ⚠️ Regras para uso excepcional
-        </div>
-
-
-        <div class="two-columns">
-
-          <div class="data-row">
-
-            <span class="data-label">
-              Exceção existente
-            </span>
-
-            <span
-              id="excecaoExiste"
-              class="data-value"
-            >
-              -
-            </span>
-
-          </div>
-
-
-          <div class="data-row">
-
-            <span class="data-label">
-              Cultura
-            </span>
-
-            <span
-              id="culturaAutorizada"
-              class="data-value"
-            >
-              -
-            </span>
-
-          </div>
-
-
-          <div class="data-row">
-
-            <span class="data-label">
-              Praga / alvo
-            </span>
-
-            <span
-              id="pragaAutorizada"
-              class="data-value"
-            >
-              -
-            </span>
-
-          </div>
-
-
-          <div class="data-row">
-
-            <span class="data-label">
-              Validade da exceção
-            </span>
-
-            <span
-              id="validadeExcecao"
-              class="data-value"
-            >
-              -
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <div class="data-row">
-
-          <span class="data-label">
-            Países abrangidos
-          </span>
-
-          <div
-            id="paisesLiberados"
-            class="pill-container"
-          >
-          </div>
-
-        </div>
-
-
-        <div class="box-group">
-
-          <span class="data-label">
-            Condições de uso
-          </span>
-
-          <div
-            id="condicoesUso"
-            class="text-box"
-          >
-          </div>
-
-        </div>
-
-      </section>
-
-
-
-      <!-- ===================================================
-           MITIGAÇÃO
-      ==================================================== -->
-      <section
-        id="cardMitigacao"
-        class="card hidden"
-      >
-
-        <div class="card-title">
-          🟡 Medidas de mitigação
+          📋 Detalhamento / Condições
         </div>
 
         <div
-          id="medidasMitigacao"
+          id="detalhamentoCondicoes"
           class="text-box"
         >
+          Selecione um produto e uma cultura para visualizar as condições aplicáveis.
         </div>
 
       </section>
-
-
-
-      <!-- ===================================================
-           FUNDAMENTAÇÃO
-      ==================================================== -->
-      <section
-        id="cardFundamentacao"
-        class="card"
-      >
-
-        <div class="card-title">
-          ⚖️ Fundamentação
-        </div>
-
-
-        <div class="data-row">
-
-          <span class="data-label">
-            Base da classificação
-          </span>
-
-          <span
-            id="baseLegalClassificacao"
-            class="data-value"
-          >
-            -
-          </span>
-
-        </div>
-
-
-        <div class="data-row">
-
-          <span class="data-label">
-            Base da exceção
-          </span>
-
-          <span
-            id="baseLegalExcecao"
-            class="data-value"
-          >
-            -
-          </span>
-
-        </div>
-
-
-        <div class="legal-footer">
-
-          <span>
-            Fonte:
-            <strong id="fonteDocumento">
-              -
-            </strong>
-          </span>
-
-          <span>
-            Página:
-            <strong id="paginaDocumento">
-              -
-            </strong>
-          </span>
-
-        </div>
-
-      </section>
-
-
-
-      <!-- ===================================================
-           STATUS DA CONCILIAÇÃO
-      ==================================================== -->
-      <section
-        id="cardConciliacao"
-        class="card card-conciliacao"
-      >
-
-        <div class="conciliacao-label">
-          Status da conciliação
-        </div>
-
-        <div
-          id="statusConciliacao"
-          class="conciliacao-status aguardando"
-        >
-          AGUARDANDO
-        </div>
-
-      </section>
-
 
     </section>
 
@@ -640,7 +280,6 @@
   <!-- =====================================================
        JAVASCRIPT
   ====================================================== -->
-
   <script src="jss/supabase.js"></script>
   <script src="jss/utils.js"></script>
   <script src="jss/agrofit.js"></script>
