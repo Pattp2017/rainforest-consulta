@@ -34,6 +34,15 @@ body {
   text-align: center;
 }
 
+.consulta-container {
+  position: relative;
+}
+
+.classificacao-principal {
+  position: relative;
+  z-index: 1;
+}
+
 .header h1 {
   margin: 0;
 }
