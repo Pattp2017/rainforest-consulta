@@ -231,7 +231,6 @@ function exibirSugestoesProdutos(
 
   limparSugestoesProdutos();
 
-
   if (
     !Array.isArray(produtos) ||
     produtos.length === 0
@@ -242,24 +241,19 @@ function exibirSugestoesProdutos(
         "div"
       );
 
-
     item.className =
       "suggestion-empty";
 
-
     item.textContent =
       "Nenhum produto encontrado";
-
 
     elementosUI.listaSugestoes.appendChild(
       item
     );
 
-
     abrirListaSugestoes();
 
     return;
-
   }
 
 
@@ -271,13 +265,87 @@ function exibirSugestoesProdutos(
           "div"
         );
 
-
       item.className =
         "suggestion-item";
 
-
       item.dataset.indice =
         String(indice);
+
+
+      // ===============================================
+      // NOME COMERCIAL
+      // ===============================================
+
+      const nomeProduto =
+        document.createElement(
+          "span"
+        );
+
+      nomeProduto.className =
+        "suggestion-name";
+
+      nomeProduto.textContent =
+        produto.marca_comercial || "";
+
+
+      // ===============================================
+      // REGISTRO MAPA
+      // ===============================================
+
+      const mapaProduto =
+        document.createElement(
+          "span"
+        );
+
+      mapaProduto.className =
+        "suggestion-mapa";
+
+      mapaProduto.textContent =
+        produto.nr_registro
+          ? `MAPA ${produto.nr_registro}`
+          : "";
+
+
+      // ===============================================
+      // INSERIR NO ITEM
+      // ===============================================
+
+      item.appendChild(
+        nomeProduto
+      );
+
+      item.appendChild(
+        mapaProduto
+      );
+
+
+      // ===============================================
+      // CLIQUE
+      // ===============================================
+
+      item.addEventListener(
+        "click",
+        () => {
+
+          selecionarProdutoAutocomplete(
+            produto
+          );
+
+        }
+      );
+
+
+      elementosUI.listaSugestoes.appendChild(
+        item
+      );
+
+    }
+  );
+
+
+  abrirListaSugestoes();
+
+}
 
 
       // -------------------------------------------------
