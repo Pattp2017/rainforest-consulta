@@ -181,6 +181,7 @@ async function buscarProdutosAgrofit(termo) {
 // BUSCAR CULTURAS DO PRODUTO
 // =====================================================
 
+
 async function buscarCulturasProdutoAgrofit(
   produto
 ) {
@@ -189,65 +190,43 @@ async function buscarCulturasProdutoAgrofit(
     return [];
   }
 
-  const nomeComercial =
-    String(
-      produto.marca_comercial || ""
-    ).trim();
-
   const registroMapa =
     String(
       produto.nr_registro || ""
     ).trim();
 
-  if (!nomeComercial) {
-    return [];
+  if (!registroMapa) {
+
+    throw new Error(
+      "Registro MAPA não identificado para o produto."
+    );
+
   }
 
   console.log(
-    "🌱 Buscando culturas do produto:",
-    nomeComercial
+    "🌱 Buscando culturas pelo MAPA:",
+    registroMapa
   );
-
-  const parametros = {
-
-    select:
-      "cultura",
-
-    marca_comercial:
-      `eq.${nomeComercial}`,
-
-    cultura:
-      "not.is.null",
-
-    order:
-      "cultura.asc",
-
-    limit: 1000
-  };
-
-
-  /*
-    Quando temos o número de registro,
-    usamos também esse filtro.
-
-    Isso evita misturar produtos que
-    eventualmente tenham nomes semelhantes.
-  */
-
-  if (registroMapa) {
-
-    parametros.nr_registro =
-      `eq.${registroMapa}`;
-
-  }
-
 
   const registros =
     await buscarRegistros(
       TABELA_AGROFIT,
-      parametros
-    );
+      {
+        select:
+          "cultura",
 
+        nr_registro:
+          `eq.${registroMapa}`,
+
+        cultura:
+          "not.is.null",
+
+        order:
+          "cultura.asc",
+
+        limit: 2000
+      }
+    );
 
   if (!Array.isArray(registros)) {
 
@@ -257,38 +236,39 @@ async function buscarCulturasProdutoAgrofit(
 
   }
 
-
   const culturasUnicas =
     new Map();
 
+  registros.forEach(
+    registro => {
 
-  registros.forEach((registro) => {
+      const cultura =
+        String(
+          registro.cultura || ""
+        ).trim();
 
-    const cultura =
-      String(
-        registro.cultura || ""
-      ).trim();
+      if (!cultura) {
+        return;
+      }
 
-    if (!cultura) {
-      return;
+      const chave =
+        normalizarTextoAgrofit(
+          cultura
+        );
+
+      if (
+        !culturasUnicas.has(chave)
+      ) {
+
+        culturasUnicas.set(
+          chave,
+          cultura
+        );
+
+      }
+
     }
-
-
-    const chave =
-      normalizarTextoAgrofit(cultura);
-
-
-    if (!culturasUnicas.has(chave)) {
-
-      culturasUnicas.set(
-        chave,
-        cultura
-      );
-
-    }
-
-  });
-
+  );
 
   const culturas =
     Array.from(
@@ -304,17 +284,14 @@ async function buscarCulturasProdutoAgrofit(
         )
     );
 
-
   console.log(
     "✔ Culturas encontradas:",
     culturas
   );
 
-
   return culturas;
 
 }
-
 
 // =====================================================
 // BUSCAR DADOS DO PRODUTO + CULTURA
@@ -333,10 +310,23 @@ async function buscarProdutoCulturaAgrofit(
 
   }
 
+  const registroMapa =
+    String(
+      produto.nr_registro || ""
+    ).trim();
 
   const culturaLimpa =
-    String(cultura || "").trim();
+    String(
+      cultura || ""
+    ).trim();
 
+  if (!registroMapa) {
+
+    throw new Error(
+      "Registro MAPA não identificado."
+    );
+
+  }
 
   if (!culturaLimpa) {
 
@@ -346,80 +336,45 @@ async function buscarProdutoCulturaAgrofit(
 
   }
 
-
-  const nomeComercial =
-    String(
-      produto.marca_comercial || ""
-    ).trim();
-
-
-  const registroMapa =
-    String(
-      produto.nr_registro || ""
-    ).trim();
-
-
-  if (!nomeComercial) {
-
-    throw new Error(
-      "Nome comercial não informado."
-    );
-
-  }
-
-
   console.log(
-    "🔎 Buscando combinação:",
-    nomeComercial,
+    "🔎 Buscando:",
+    "MAPA",
+    registroMapa,
     "+",
     culturaLimpa
   );
 
-
-  const parametros = {
-
-    select:
-      [
-        "nr_registro",
-        "marca_comercial",
-        "formulacao",
-        "ingrediente_ativo",
-        "titular_de_registro",
-        "classe",
-        "modo_de_acao",
-        "cultura",
-        "praga_nome_cientifico",
-        "praga_nome_comum",
-        "classe_toxicologica",
-        "classe_ambiental",
-        "organicos",
-        "situacao"
-      ].join(","),
-
-    marca_comercial:
-      `eq.${nomeComercial}`,
-
-    cultura:
-      `eq.${culturaLimpa}`,
-
-    limit: 1000
-  };
-
-
-  if (registroMapa) {
-
-    parametros.nr_registro =
-      `eq.${registroMapa}`;
-
-  }
-
-
   const registros =
     await buscarRegistros(
       TABELA_AGROFIT,
-      parametros
-    );
+      {
+        select:
+          [
+            "nr_registro",
+            "marca_comercial",
+            "formulacao",
+            "ingrediente_ativo",
+            "titular_de_registro",
+            "classe",
+            "modo_de_acao",
+            "cultura",
+            "praga_nome_cientifico",
+            "praga_nome_comum",
+            "classe_toxicologica",
+            "classe_ambiental",
+            "organicos",
+            "situacao"
+          ].join(","),
 
+        nr_registro:
+          `eq.${registroMapa}`,
+
+        cultura:
+          `eq.${culturaLimpa}`,
+
+        limit: 2000
+      }
+    );
 
   if (!Array.isArray(registros)) {
 
@@ -429,17 +384,14 @@ async function buscarProdutoCulturaAgrofit(
 
   }
 
-
   console.log(
-    "✔ Registros produto/cultura:",
+    "✔ Registros encontrados:",
     registros
   );
-
 
   return registros;
 
 }
-
 
 // =====================================================
 // CONSOLIDAR DADOS DO PRODUTO
