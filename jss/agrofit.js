@@ -2,120 +2,70 @@
 // AGROFIT
 // Consultas relacionadas à tabela agrofit_raw
 // Projeto: Rainforest Consulta
+//
+// NOVA LÓGICA:
+//
+// 1. Usuário pesquisa pelo nome comercial
+// 2. Sistema encontra o produto
+// 3. Sistema lista as culturas existentes no Agrofit
+//    para aquele produto
+// 4. Usuário seleciona a cultura
+// 5. Sistema busca os registros específicos
+//    produto + cultura
 // =====================================================
 
-// -----------------------------------------------------
+
+// =====================================================
 // CONFIGURAÇÃO
-// -----------------------------------------------------
+// =====================================================
 
 const TABELA_AGROFIT = "agrofit_raw";
 
-const TAMANHO_PAGINA_AGROFIT = 1000;
 
-// -----------------------------------------------------
-// CARREGAR CULTURAS
-// -----------------------------------------------------
-
-async function carregarCulturas() {
-  const culturasUnicas = new Map();
-
-  let pagina = 0;
-  let continuarConsulta = true;
-
-  while (continuarConsulta) {
-    const registros = await buscarRegistros(
-      TABELA_AGROFIT,
-      {
-        select: "cultura",
-        cultura: "not.is.null",
-        order: "cultura.asc",
-        limit: TAMANHO_PAGINA_AGROFIT,
-        offset: pagina * TAMANHO_PAGINA_AGROFIT
-      }
-    );
-
-    if (!Array.isArray(registros)) {
-      throw new Error(
-        "A consulta de culturas não retornou uma lista válida."
-      );
-    }
-
-    registros.forEach((registro) => {
-      const cultura = String(
-        registro.cultura || ""
-      ).trim();
-
-      if (!cultura) {
-        return;
-      }
-
-      const chave = normalizarTextoAgrofit(cultura);
-
-      if (!culturasUnicas.has(chave)) {
-        culturasUnicas.set(chave, cultura);
-      }
-    });
-
-    continuarConsulta =
-      registros.length === TAMANHO_PAGINA_AGROFIT;
-
-    pagina += 1;
-  }
-
-  return Array.from(
-    culturasUnicas.values()
-  ).sort((culturaA, culturaB) =>
-    culturaA.localeCompare(
-      culturaB,
-      "pt-BR",
-      {
-        sensitivity: "base"
-      }
-    )
-  );
-}
-
-// -----------------------------------------------------
+// =====================================================
 // NORMALIZAÇÃO INTERNA
-// -----------------------------------------------------
+// =====================================================
 
 function normalizarTextoAgrofit(valor) {
+
   return String(valor || "")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .trim();
+
 }
 
 
 // =====================================================
-// BUSCAR PRODUTOS POR CULTURA E TERMO
+// ESCAPAR TERMO PARA CONSULTA
 // =====================================================
 
-async function buscarProdutosAgrofit(
-  cultura,
-  termo
-) {
+function limparTermoConsultaAgrofit(valor) {
 
-  const culturaLimpa =
-    String(cultura || "").trim();
+  return String(valor || "")
+    .trim()
+    .replace(/[%*]/g, "");
+
+}
+
+
+// =====================================================
+// BUSCAR PRODUTOS PELO NOME COMERCIAL
+// =====================================================
+
+async function buscarProdutosAgrofit(termo) {
 
   const termoLimpo =
-    String(termo || "").trim();
-
-  if (!culturaLimpa) {
-    return [];
-  }
+    limparTermoConsultaAgrofit(termo);
 
   if (termoLimpo.length < 3) {
     return [];
   }
 
   console.log(
-    "Buscando produto:",
-    termoLimpo,
-    "Cultura:",
-    culturaLimpa
+    "🔎 Buscando produtos Agrofit:",
+    termoLimpo
   );
 
   const registros =
@@ -123,10 +73,7 @@ async function buscarProdutosAgrofit(
       TABELA_AGROFIT,
       {
         select:
-          "nr_registro,marca_comercial,cultura,ingrediente_ativo,situacao",
-
-        cultura:
-          `ilike.*${culturaLimpa}*`,
+          "nr_registro,marca_comercial,ingrediente_ativo,classe,situacao",
 
         marca_comercial:
           `ilike.*${termoLimpo}*`,
@@ -139,15 +86,20 @@ async function buscarProdutosAgrofit(
     );
 
   if (!Array.isArray(registros)) {
+
     throw new Error(
       "A consulta de produtos não retornou uma lista válida."
     );
+
   }
 
-  console.log(
-    "Produtos encontrados:",
-    registros
-  );
+  // ---------------------------------------------------
+  // REMOVER REPETIÇÕES
+  //
+  // O Agrofit possui várias linhas do mesmo produto
+  // porque cada combinação pode representar cultura,
+  // praga ou alvo diferente.
+  // ---------------------------------------------------
 
   const produtosUnicos =
     new Map();
@@ -163,16 +115,39 @@ async function buscarProdutosAgrofit(
       return;
     }
 
+    const numeroRegistro =
+      String(
+        registro.nr_registro || ""
+      ).trim();
+
+    /*
+      Usamos nome + registro porque pode existir
+      nome comercial semelhante associado a registros
+      diferentes.
+    */
+
     const chave =
-      normalizarTextoAgrofit(nome);
+      `${normalizarTextoAgrofit(nome)}|${numeroRegistro}`;
 
     if (!produtosUnicos.has(chave)) {
 
       produtosUnicos.set(
         chave,
         {
-          ...registro,
-          marca_comercial: nome
+          nr_registro:
+            registro.nr_registro,
+
+          marca_comercial:
+            nome,
+
+          ingrediente_ativo:
+            registro.ingrediente_ativo,
+
+          classe:
+            registro.classe,
+
+          situacao:
+            registro.situacao
         }
       );
 
@@ -180,8 +155,474 @@ async function buscarProdutosAgrofit(
 
   });
 
+  const produtos =
+    Array.from(
+      produtosUnicos.values()
+    );
+
+  console.log(
+    "✔ Produtos encontrados:",
+    produtos
+  );
+
+  return produtos;
+
+}
+
+
+// =====================================================
+// BUSCAR CULTURAS DO PRODUTO
+// =====================================================
+
+async function buscarCulturasProdutoAgrofit(
+  produto
+) {
+
+  if (!produto) {
+    return [];
+  }
+
+  const nomeComercial =
+    String(
+      produto.marca_comercial || ""
+    ).trim();
+
+  const registroMapa =
+    String(
+      produto.nr_registro || ""
+    ).trim();
+
+  if (!nomeComercial) {
+    return [];
+  }
+
+  console.log(
+    "🌱 Buscando culturas do produto:",
+    nomeComercial
+  );
+
+  const parametros = {
+
+    select:
+      "cultura",
+
+    marca_comercial:
+      `eq.${nomeComercial}`,
+
+    cultura:
+      "not.is.null",
+
+    order:
+      "cultura.asc",
+
+    limit: 1000
+  };
+
+
+  /*
+    Quando temos o número de registro,
+    usamos também esse filtro.
+
+    Isso evita misturar produtos que
+    eventualmente tenham nomes semelhantes.
+  */
+
+  if (registroMapa) {
+
+    parametros.nr_registro =
+      `eq.${registroMapa}`;
+
+  }
+
+
+  const registros =
+    await buscarRegistros(
+      TABELA_AGROFIT,
+      parametros
+    );
+
+
+  if (!Array.isArray(registros)) {
+
+    throw new Error(
+      "A consulta de culturas não retornou uma lista válida."
+    );
+
+  }
+
+
+  const culturasUnicas =
+    new Map();
+
+
+  registros.forEach((registro) => {
+
+    const cultura =
+      String(
+        registro.cultura || ""
+      ).trim();
+
+    if (!cultura) {
+      return;
+    }
+
+
+    const chave =
+      normalizarTextoAgrofit(cultura);
+
+
+    if (!culturasUnicas.has(chave)) {
+
+      culturasUnicas.set(
+        chave,
+        cultura
+      );
+
+    }
+
+  });
+
+
+  const culturas =
+    Array.from(
+      culturasUnicas.values()
+    ).sort(
+      (a, b) =>
+        a.localeCompare(
+          b,
+          "pt-BR",
+          {
+            sensitivity: "base"
+          }
+        )
+    );
+
+
+  console.log(
+    "✔ Culturas encontradas:",
+    culturas
+  );
+
+
+  return culturas;
+
+}
+
+
+// =====================================================
+// BUSCAR DADOS DO PRODUTO + CULTURA
+// =====================================================
+
+async function buscarProdutoCulturaAgrofit(
+  produto,
+  cultura
+) {
+
+  if (!produto) {
+
+    throw new Error(
+      "Produto não informado."
+    );
+
+  }
+
+
+  const culturaLimpa =
+    String(cultura || "").trim();
+
+
+  if (!culturaLimpa) {
+
+    throw new Error(
+      "Cultura não informada."
+    );
+
+  }
+
+
+  const nomeComercial =
+    String(
+      produto.marca_comercial || ""
+    ).trim();
+
+
+  const registroMapa =
+    String(
+      produto.nr_registro || ""
+    ).trim();
+
+
+  if (!nomeComercial) {
+
+    throw new Error(
+      "Nome comercial não informado."
+    );
+
+  }
+
+
+  console.log(
+    "🔎 Buscando combinação:",
+    nomeComercial,
+    "+",
+    culturaLimpa
+  );
+
+
+  const parametros = {
+
+    select:
+      [
+        "nr_registro",
+        "marca_comercial",
+        "formulacao",
+        "ingrediente_ativo",
+        "titular_de_registro",
+        "classe",
+        "modo_de_acao",
+        "cultura",
+        "praga_nome_cientifico",
+        "praga_nome_comum",
+        "classe_toxicologica",
+        "classe_ambiental",
+        "organicos",
+        "situacao"
+      ].join(","),
+
+    marca_comercial:
+      `eq.${nomeComercial}`,
+
+    cultura:
+      `eq.${culturaLimpa}`,
+
+    limit: 1000
+  };
+
+
+  if (registroMapa) {
+
+    parametros.nr_registro =
+      `eq.${registroMapa}`;
+
+  }
+
+
+  const registros =
+    await buscarRegistros(
+      TABELA_AGROFIT,
+      parametros
+    );
+
+
+  if (!Array.isArray(registros)) {
+
+    throw new Error(
+      "A consulta produto + cultura não retornou uma lista válida."
+    );
+
+  }
+
+
+  console.log(
+    "✔ Registros produto/cultura:",
+    registros
+  );
+
+
+  return registros;
+
+}
+
+
+// =====================================================
+// CONSOLIDAR DADOS DO PRODUTO
+// =====================================================
+
+function consolidarProdutoAgrofit(
+  registros
+) {
+
+  if (
+    !Array.isArray(registros) ||
+    registros.length === 0
+  ) {
+    return null;
+  }
+
+
+  const primeiro =
+    registros[0];
+
+
+  // ---------------------------------------------------
+  // INGREDIENTES ATIVOS
+  // ---------------------------------------------------
+
+  const ingredientes =
+    valoresUnicosAgrofit(
+      registros,
+      "ingrediente_ativo"
+    );
+
+
+  // ---------------------------------------------------
+  // CLASSES AGRONÔMICAS
+  // ---------------------------------------------------
+
+  const classes =
+    valoresUnicosAgrofit(
+      registros,
+      "classe"
+    );
+
+
+  // ---------------------------------------------------
+  // PRAGAS / ALVOS
+  // ---------------------------------------------------
+
+  const pragas =
+    new Map();
+
+
+  registros.forEach((registro) => {
+
+    const nomeComum =
+      String(
+        registro.praga_nome_comum || ""
+      ).trim();
+
+
+    const nomeCientifico =
+      String(
+        registro.praga_nome_cientifico || ""
+      ).trim();
+
+
+    if (
+      !nomeComum &&
+      !nomeCientifico
+    ) {
+      return;
+    }
+
+
+    let descricao = "";
+
+
+    if (
+      nomeComum &&
+      nomeCientifico
+    ) {
+
+      descricao =
+        `${nomeComum} (${nomeCientifico})`;
+
+    } else {
+
+      descricao =
+        nomeComum ||
+        nomeCientifico;
+
+    }
+
+
+    const chave =
+      normalizarTextoAgrofit(
+        descricao
+      );
+
+
+    if (!pragas.has(chave)) {
+
+      pragas.set(
+        chave,
+        descricao
+      );
+
+    }
+
+  });
+
+
+  return {
+
+    nr_registro:
+      primeiro.nr_registro || "",
+
+    marca_comercial:
+      primeiro.marca_comercial || "",
+
+    cultura:
+      primeiro.cultura || "",
+
+    ingrediente_ativo:
+      ingredientes.join("; "),
+
+    classe:
+      classes.join("; "),
+
+    pragas_alvos:
+      Array.from(
+        pragas.values()
+      ).join("; "),
+
+    situacao:
+      primeiro.situacao || "",
+
+    registros:
+      registros
+
+  };
+
+}
+
+
+// =====================================================
+// OBTER VALORES ÚNICOS DE UMA COLUNA
+// =====================================================
+
+function valoresUnicosAgrofit(
+  registros,
+  campo
+) {
+
+  const valores =
+    new Map();
+
+
+  registros.forEach((registro) => {
+
+    const valor =
+      String(
+        registro?.[campo] || ""
+      ).trim();
+
+
+    if (!valor) {
+      return;
+    }
+
+
+    const chave =
+      normalizarTextoAgrofit(
+        valor
+      );
+
+
+    if (!valores.has(chave)) {
+
+      valores.set(
+        chave,
+        valor
+      );
+
+    }
+
+  });
+
+
   return Array.from(
-    produtosUnicos.values()
+    valores.values()
   );
 
 }
