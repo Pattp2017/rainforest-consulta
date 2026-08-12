@@ -20,7 +20,7 @@ let indiceSugestaoAtiva = -1;
 // CONFIGURAÇÃO
 // =====================================================
 
-const TEMPO_AUTOCOMPLETE =400;
+const TEMPO_AUTOCOMPLETE = 400;
 
 const MINIMO_CARACTERES_AUTOCOMPLETE = 3;
 
@@ -80,14 +80,14 @@ function tratarDigitacaoProduto() {
     ).trim();
 
 
-  // ---------------------------------------------------
-  // Sempre que o usuário altera o texto,
-  // o produto anteriormente selecionado deixa
-  // de ser considerado válido.
-  // ---------------------------------------------------
+  /*
+    Ao alterar o texto, qualquer produto
+    anteriormente selecionado deixa de ser válido.
+  */
 
   if (
-    typeof limparProdutoSelecionado === "function"
+    typeof limparProdutoSelecionado ===
+    "function"
   ) {
 
     limparProdutoSelecionado();
@@ -141,11 +141,6 @@ async function executarBuscaAutocomplete(
     ).trim();
 
 
-  // ---------------------------------------------------
-  // Evita executar consulta antiga caso o usuário
-  // continue digitando durante o debounce.
-  // ---------------------------------------------------
-
   if (
     termoAtual !== termo ||
     termoAtual.length <
@@ -171,12 +166,8 @@ async function executarBuscaAutocomplete(
 
 
     /*
-      Confere novamente se o texto do campo
-      continua igual ao termo que originou
-      esta consulta.
-
-      Isso evita mostrar sugestões antigas
-      depois que o usuário já digitou outra coisa.
+      Se o usuário continuou digitando,
+      descarta o resultado anterior.
     */
 
     if (
@@ -231,6 +222,7 @@ function exibirSugestoesProdutos(
 
   limparSugestoesProdutos();
 
+
   if (
     !Array.isArray(produtos) ||
     produtos.length === 0
@@ -241,188 +233,122 @@ function exibirSugestoesProdutos(
         "div"
       );
 
+
     item.className =
       "suggestion-empty";
 
+
     item.textContent =
       "Nenhum produto encontrado";
+
 
     elementosUI.listaSugestoes.appendChild(
       item
     );
 
+
     abrirListaSugestoes();
 
     return;
+
   }
 
 
-  produtos.slice(0, 20).forEach(
-    (produto, indice) => {
+  produtos
+    .slice(0, 20)
+    .forEach(
+      (produto, indice) => {
 
-      const item =
-        document.createElement(
-          "div"
-        );
-
-      item.className =
-        "suggestion-item";
-
-      item.dataset.indice =
-        String(indice);
-
-
-      // ===============================================
-      // NOME COMERCIAL
-      // ===============================================
-
-      const nomeProduto =
-        document.createElement(
-          "span"
-        );
-
-      nomeProduto.className =
-        "suggestion-name";
-
-      nomeProduto.textContent =
-        produto.marca_comercial || "";
-
-
-      // ===============================================
-      // REGISTRO MAPA
-      // ===============================================
-
-      const mapaProduto =
-        document.createElement(
-          "span"
-        );
-
-      mapaProduto.className =
-        "suggestion-mapa";
-
-      mapaProduto.textContent =
-        produto.nr_registro
-          ? `MAPA ${produto.nr_registro}`
-          : "";
-
-
-      // ===============================================
-      // INSERIR NO ITEM
-      // ===============================================
-
-      item.appendChild(
-        nomeProduto
-      );
-
-      item.appendChild(
-        mapaProduto
-      );
-
-
-      // ===============================================
-      // CLIQUE
-      // ===============================================
-
-      item.addEventListener(
-        "click",
-        () => {
-
-          selecionarProdutoAutocomplete(
-            produto
-          );
-
-        }
-      );
-
-
-      elementosUI.listaSugestoes.appendChild(
-        item
-      );
-
-    }
-  );
-
-
-  abrirListaSugestoes();
-
-}
-
-
-      // -------------------------------------------------
-      // NOME COMERCIAL
-      // -------------------------------------------------
-
-      const nome =
-        document.createElement(
-          "div"
-        );
-
-
-      nome.className =
-        "suggestion-name";
-
-
-      nome.textContent =
-        produto.marca_comercial ||
-        "Produto sem nome";
-
-
-      item.appendChild(
-        nome
-      );
-
-
-      // -------------------------------------------------
-      // REGISTRO MAPA
-      // -------------------------------------------------
-
-      if (
-        produto.nr_registro
-      ) {
-
-        const registro =
+        const item =
           document.createElement(
             "div"
           );
 
 
-        registro.className =
-          "suggestion-meta";
+        item.className =
+          "suggestion-item";
 
 
-        registro.textContent =
-          `Registro MAPA: ${produto.nr_registro}`;
+        item.dataset.indice =
+          String(indice);
+
+
+        // ===============================================
+        // NOME COMERCIAL
+        // ===============================================
+
+        const nomeProduto =
+          document.createElement(
+            "span"
+          );
+
+
+        nomeProduto.className =
+          "suggestion-name";
+
+
+        nomeProduto.textContent =
+          produto.marca_comercial ||
+          "Produto sem nome";
+
+
+        // ===============================================
+        // MAPA
+        // ===============================================
+
+        const mapaProduto =
+          document.createElement(
+            "span"
+          );
+
+
+        mapaProduto.className =
+          "suggestion-mapa";
+
+
+        mapaProduto.textContent =
+          produto.nr_registro
+            ? `MAPA ${produto.nr_registro}`
+            : "";
+
+
+        // ===============================================
+        // INSERIR CONTEÚDO
+        // ===============================================
+
+        item.appendChild(
+          nomeProduto
+        );
 
 
         item.appendChild(
-          registro
+          mapaProduto
+        );
+
+
+        // ===============================================
+        // CLIQUE
+        // ===============================================
+
+        item.addEventListener(
+          "click",
+          () =>
+            selecionarProdutoAutocomplete(
+              produto
+            )
+        );
+
+
+        elementosUI.listaSugestoes.appendChild(
+          item
         );
 
       }
-
-
-      // -------------------------------------------------
-      // CLIQUE
-      // -------------------------------------------------
-
-      item.addEventListener(
-        "click",
-        () =>
-          selecionarProdutoAutocomplete(
-            produto
-          )
-      );
-
-
-      elementosUI.listaSugestoes.appendChild(
-        item
-      );
-
-    }
-  );
+    );
 
 
   indiceSugestaoAtiva = -1;
+
 
   abrirListaSugestoes();
 
@@ -447,7 +373,7 @@ function abrirListaSugestoes() {
 
 
 // =====================================================
-// FECHAR LISTA
+// LIMPAR / FECHAR LISTA
 // =====================================================
 
 function limparSugestoesProdutos() {
@@ -506,18 +432,6 @@ function selecionarProdutoAutocomplete(
     produto
   );
 
-
-  /*
-    A partir daqui começa a nova etapa:
-
-    Produto
-        ↓
-    Culturas do produto
-        ↓
-    Usuário seleciona cultura
-        ↓
-    Classificação Rainforest
-  */
 
   if (
     typeof tratarProdutoSelecionado ===
@@ -653,11 +567,6 @@ function tratarTeclaProduto(
     "Enter"
   ) {
 
-    /*
-      Se há uma sugestão destacada,
-      seleciona aquela sugestão.
-    */
-
     if (
       indiceSugestaoAtiva >= 0 &&
       itens[indiceSugestaoAtiva]
@@ -690,8 +599,8 @@ function tratarTeclaProduto(
 
 
     /*
-      Se não existe sugestão destacada,
-      o botão BUSCAR pode assumir a consulta.
+      Sem sugestão destacada,
+      executa busca manual.
     */
 
     if (
@@ -736,7 +645,7 @@ function obterItensSugestoes() {
 
 
 // =====================================================
-// ATUALIZAR ITEM ATIVO
+// ITEM ATIVO
 // =====================================================
 
 function atualizarSugestaoAtiva(
