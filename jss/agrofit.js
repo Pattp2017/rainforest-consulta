@@ -81,17 +81,64 @@ async function buscarProdutosAgrofit(termo) {
         order:
           "marca_comercial.asc",
 
-        limit: 100
+        limit: 300
       }
     );
 
   if (!Array.isArray(registros)) {
-
     throw new Error(
       "A consulta de produtos não retornou uma lista válida."
     );
-
   }
+
+  const produtosUnicos =
+    new Map();
+
+  registros.forEach((registro) => {
+
+    const nome =
+      String(
+        registro.marca_comercial || ""
+      ).trim();
+
+    if (!nome) {
+      return;
+    }
+
+    const chave =
+      normalizarTextoAgrofit(nome);
+
+    if (!produtosUnicos.has(chave)) {
+
+      produtosUnicos.set(
+        chave,
+        {
+          nr_registro:
+            registro.nr_registro,
+
+          marca_comercial:
+            nome,
+
+          ingrediente_ativo:
+            registro.ingrediente_ativo,
+
+          classe:
+            registro.classe,
+
+          situacao:
+            registro.situacao
+        }
+      );
+
+    }
+
+  });
+
+  return Array.from(
+    produtosUnicos.values()
+  ).slice(0, 30);
+
+}
 
   // ---------------------------------------------------
   // REMOVER REPETIÇÕES
