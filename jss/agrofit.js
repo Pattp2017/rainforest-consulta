@@ -63,6 +63,9 @@ async function buscarProdutosAgrofit(termo) {
     return [];
   }
 
+  const termoNormalizado =
+    normalizarTextoAgrofit(termoLimpo);
+
   console.log(
     "🔎 Buscando produtos Agrofit:",
     termoLimpo
@@ -96,48 +99,82 @@ async function buscarProdutosAgrofit(termo) {
 
   registros.forEach((registro) => {
 
-    const nome =
+    const campoMarca =
       String(
         registro.marca_comercial || ""
       ).trim();
 
-    if (!nome) {
+    if (!campoMarca) {
       return;
     }
 
-    const chave =
-      normalizarTextoAgrofit(nome);
+    const nomes =
+      campoMarca
+        .split(";")
+        .map(nome => nome.trim())
+        .filter(Boolean);
 
-    if (!produtosUnicos.has(chave)) {
+    nomes.forEach((nome) => {
 
-      produtosUnicos.set(
-        chave,
-        {
-          nr_registro:
-            registro.nr_registro,
+      const nomeNormalizado =
+        normalizarTextoAgrofit(nome);
 
-          marca_comercial:
-            nome,
+      if (
+        !nomeNormalizado.includes(
+          termoNormalizado
+        )
+      ) {
+        return;
+      }
 
-          ingrediente_ativo:
-            registro.ingrediente_ativo,
+      const chave =
+        `${nomeNormalizado}|${registro.nr_registro || ""}`;
 
-          classe:
-            registro.classe,
+      if (!produtosUnicos.has(chave)) {
 
-          situacao:
-            registro.situacao
-        }
-      );
+        produtosUnicos.set(
+          chave,
+          {
+            nr_registro:
+              registro.nr_registro,
 
-    }
+            marca_comercial:
+              nome,
+
+            marca_comercial_original:
+              campoMarca,
+
+            ingrediente_ativo:
+              registro.ingrediente_ativo,
+
+            classe:
+              registro.classe,
+
+            situacao:
+              registro.situacao
+          }
+        );
+
+      }
+
+    });
 
   });
 
   return Array.from(
     produtosUnicos.values()
-  ).slice(0, 30);
-
+  )
+    .sort(
+      (a, b) =>
+        a.marca_comercial.localeCompare(
+          b.marca_comercial,
+          "pt-BR",
+          {
+            sensitivity: "base"
+          }
+        )
+    )
+    .slice(0, 30);
 }
 
   // ---------------------------------------------------
