@@ -1,61 +1,42 @@
-// =====================================================
+// ===================================================== 
 // RAINFOREST
-// Classificação dos componentes e validação de PUE
-// Projeto: Rainforest Consulta
+// Classificação dos componentes e validação de PUE 
+// Projeto: Rainforest Consulta 
 // =====================================================
 
-
-// =====================================================
+// ===================================================== 
 // CONFIGURAÇÃO
 // =====================================================
 
-const TABELA_RAINFOREST_COMPONENTES =
-  "rainforest_componentes";
+const TABELA_RAINFOREST_COMPONENTES = “rainforest_componentes”;
 
-const TABELA_RAINFOREST_USO_EXCEPCIONAL =
-  "rainforest_uso_excepcional";
+const TABELA_RAINFOREST_USO_EXCEPCIONAL = “rainforest_uso_excepcional”;
 
-
-// =====================================================
-// CACHE
-//
-// As tabelas Rainforest são pequenas.
-// Carregamos uma vez e reutilizamos durante a sessão.
+// ===================================================== // CACHE 
+// 
+// As tabelas Rainforest são pequenas. 
+// Carregamos uma vez e reutilizamos durante a sessão. 
 // =====================================================
 
-let cacheRainforestComponentes = null;
-let cacheRainforestUsoExcepcional = null;
+let cacheRainforestComponentes = null; let cacheRainforestUsoExcepcional
+= null;
 
-
+// ===================================================== 
+// CONSULTA PRINCIPAL 
 // =====================================================
-// CONSULTA PRINCIPAL
-// =====================================================
 
-async function consultarClassificacaoRainforest(
-  produto
-) {
+async function consultarClassificacaoRainforest( produto ) {
 
-  if (!produto) {
-    return null;
-  }
+if (!produto) { return null; }
 
-  const ingredienteAtivo =
-    String(
-      produto.ingrediente_ativo || ""
-    ).trim();
+const ingredienteAtivo = String( produto.ingrediente_ativo || “”
+).trim();
 
-  const cultura =
-    String(
-      produto.cultura || ""
-    ).trim();
+const cultura = String( produto.cultura || “” ).trim();
 
-  const pragas =
-    String(
-      produto.pragas_alvos || ""
-    ).trim();
+const pragas = String( produto.pragas_alvos || “” ).trim();
 
-
-  if (!ingredienteAtivo) {
+if (!ingredienteAtivo) {
 
     return {
       classificacao:
@@ -68,44 +49,25 @@ async function consultarClassificacaoRainforest(
         "O Agrofit não informou ingrediente ativo suficiente para realizar o cruzamento com a base Rainforest."
     };
 
-  }
+}
 
+// ————————————————— // CARREGAR BASES // —————————————————
 
-  // ---------------------------------------------------
-  // CARREGAR BASES
-  // ---------------------------------------------------
+const componentes = await carregarRainforestComponentes();
 
-  const componentes =
-    await carregarRainforestComponentes();
+const excecoes = await carregarRainforestUsoExcepcional();
 
-  const excecoes =
-    await carregarRainforestUsoExcepcional();
+// ————————————————— // LOCALIZAR COMPONENTES DO PRODUTO //
+—————————————————
 
+const correspondencias = localizarComponentesRainforest(
+ingredienteAtivo, componentes );
 
-  // ---------------------------------------------------
-  // LOCALIZAR COMPONENTES DO PRODUTO
-  // ---------------------------------------------------
+console.log( “🌳 Correspondências Rainforest:”, correspondencias );
 
-  const correspondencias =
-    localizarComponentesRainforest(
-      ingredienteAtivo,
-      componentes
-    );
+// ————————————————— // NÃO ENCONTROU RESTRIÇÃO // —————————————————
 
-
-  console.log(
-    "🌳 Correspondências Rainforest:",
-    correspondencias
-  );
-
-
-  // ---------------------------------------------------
-  // NÃO ENCONTROU RESTRIÇÃO
-  // ---------------------------------------------------
-
-  if (
-    correspondencias.length === 0
-  ) {
+if ( correspondencias.length === 0 ) {
 
     return {
       classificacao:
@@ -118,55 +80,37 @@ async function consultarClassificacaoRainforest(
         "Nenhuma correspondência foi encontrada entre o(s) ingrediente(s) ativo(s) do produto e os componentes atualmente cadastrados na base Rainforest."
     };
 
-  }
+}
 
+// ————————————————— 
+// ORDENAR PELA CLASSIFICAÇÃO MAIS RESTRITIVA 
+// —————————————————
 
-  // ---------------------------------------------------
-  // ORDENAR PELA CLASSIFICAÇÃO MAIS RESTRITIVA
-  // ---------------------------------------------------
+const correspondenciasOrdenadas = […correspondencias].sort( (a, b) =>
+obterPesoClassificacao( b.classificacao ) - obterPesoClassificacao(
+a.classificacao ) );
 
-  const correspondenciasOrdenadas =
-    [...correspondencias].sort(
-      (a, b) =>
-        obterPesoClassificacao(
-          b.classificacao
-        ) -
-        obterPesoClassificacao(
-          a.classificacao
-        )
-    );
+const principal = correspondenciasOrdenadas[0];
 
+const tipo = identificarTipoClassificacao( principal.classificacao );
 
-  const principal =
-    correspondenciasOrdenadas[0];
+// =================================================== 
+// PROIBIDO 
+//===================================================
 
-
-  const tipo =
-    identificarTipoClassificacao(
-      principal.classificacao
-    );
-
-
-  // ===================================================
-  // PROIBIDO
-  // ===================================================
-
-  if (tipo === "PROIBIDO") {
+if (tipo === “PROIBIDO”) {
 
     return montarResultadoProibido(
       correspondenciasOrdenadas
     );
 
-  }
+}
 
+// =================================================== 
+// USO EXCEPCIONAL 
+// ===================================================
 
-  // ===================================================
-  // USO EXCEPCIONAL
-  // ===================================================
-
-  if (
-    tipo === "USO_EXCEPCIONAL"
-  ) {
+if ( tipo === “USO_EXCEPCIONAL” ) {
 
     return montarResultadoUsoExcepcional(
       correspondenciasOrdenadas,
@@ -175,29 +119,25 @@ async function consultarClassificacaoRainforest(
       pragas
     );
 
-  }
+}
 
+// =================================================== 
+// MITIGAÇÃO 
+// ===================================================
 
-  // ===================================================
-  // MITIGAÇÃO
-  // ===================================================
-
-  if (
-    tipo === "MITIGACAO"
-  ) {
+if ( tipo === “MITIGACAO” ) {
 
     return montarResultadoMitigacao(
       correspondenciasOrdenadas
     );
 
-  }
+}
 
+// =================================================== 
+// OUTRA CLASSIFICAÇÃO CADASTRADA 
+// ===================================================
 
-  // ===================================================
-  // OUTRA CLASSIFICAÇÃO CADASTRADA
-  // ===================================================
-
-  return {
+return {
 
     classificacao:
       formatarClassificacaoRainforest(
@@ -212,34 +152,25 @@ async function consultarClassificacaoRainforest(
         correspondenciasOrdenadas
       )
 
-  };
+};
 
 }
 
-
-// =====================================================
-// CARREGAR COMPONENTES
+// ===================================================== 
+// CARREGAR COMPONENTES 
 // =====================================================
 
 async function carregarRainforestComponentes() {
 
-  if (
-    Array.isArray(
-      cacheRainforestComponentes
-    )
-  ) {
+if ( Array.isArray( cacheRainforestComponentes ) ) {
 
     return cacheRainforestComponentes;
 
-  }
+}
 
-
-  const registros =
-    await buscarRegistros(
-      TABELA_RAINFOREST_COMPONENTES,
-      {
-        select:
-          "id,componente,nr_cas,classificacao,classificacao_toxicidade,grupo,praga,cultura,paises,data_fim,condicoes_uso,base_legal,fonte,pagina",
+const registros = await buscarRegistros( TABELA_RAINFOREST_COMPONENTES,
+{ select:
+“id,componente,nr_cas,classificacao,classificacao_toxicidade,grupo,praga,cultura,paises,data_fim,condicoes_uso,base_legal,fonte,pagina”,
 
         order:
           "componente.asc",
@@ -248,48 +179,35 @@ async function carregarRainforestComponentes() {
       }
     );
 
-
-  if (!Array.isArray(registros)) {
+if (!Array.isArray(registros)) {
 
     throw new Error(
       "Não foi possível carregar a base de componentes Rainforest."
     );
 
-  }
+}
 
+cacheRainforestComponentes = registros;
 
-  cacheRainforestComponentes =
-    registros;
-
-
-  return registros;
+return registros;
 
 }
 
-
-// =====================================================
+// ===================================================== 
 // CARREGAR PUE
 // =====================================================
 
 async function carregarRainforestUsoExcepcional() {
 
-  if (
-    Array.isArray(
-      cacheRainforestUsoExcepcional
-    )
-  ) {
+if ( Array.isArray( cacheRainforestUsoExcepcional ) ) {
 
     return cacheRainforestUsoExcepcional;
 
-  }
+}
 
-
-  const registros =
-    await buscarRegistros(
-      TABELA_RAINFOREST_USO_EXCEPCIONAL,
-      {
-        select:
-          "id,componente,nr_cas,classificacao,classificacao_toxicidade,grupo,praga,cultura,paises,data_fim,condicoes_uso,base_legal,fonte,pagina",
+const registros = await buscarRegistros(
+TABELA_RAINFOREST_USO_EXCEPCIONAL, { select:
+“id,componente,nr_cas,classificacao,classificacao_toxicidade,grupo,praga,cultura,paises,data_fim,condicoes_uso,base_legal,fonte,pagina”,
 
         order:
           "componente.asc",
@@ -298,147 +216,116 @@ async function carregarRainforestUsoExcepcional() {
       }
     );
 
-
-  if (!Array.isArray(registros)) {
+if (!Array.isArray(registros)) {
 
     throw new Error(
       "Não foi possível carregar a base de uso excepcional Rainforest."
     );
 
-  }
+}
 
+cacheRainforestUsoExcepcional = registros;
 
-  cacheRainforestUsoExcepcional =
-    registros;
-
-
-  return registros;
+return registros;
 
 }
 
-
+// ===================================================== 
+// LOCALIZAR COMPONENTES 
 // =====================================================
-// LOCALIZAR COMPONENTES
-// =====================================================
 
-function localizarComponentesRainforest(
-  ingredienteAtivo,
-  componentes
-) {
+function localizarComponentesRainforest( ingredienteAtivo, componentes )
+{
 
-  const textoProduto =
-    normalizarTextoRainforest(
-      ingredienteAtivo
-    );
+const textoProduto = normalizarTextoRainforest( ingredienteAtivo );
 
+if (!textoProduto) { return []; }
 
-  if (!textoProduto) {
-    return [];
-  }
-
-
-  return componentes.filter(
-    (registro) => {
+return componentes.filter( (registro) => {
 
       const aliases =
         obterAliasesComponente(
           registro.componente
         );
 
-
       return aliases.some(
-        (alias) => {
-
-          const termo =
-            normalizarTextoRainforest(
-              alias
-            );
-
-
-          if (
-            !termo ||
-            termo.length < 4
-          ) {
-            return false;
-          }
-
-
-          return (
-            textoProduto.includes(
-              termo
-            ) ||
-            termo.includes(
-              textoProduto
-            )
-          );
-
-        }
+        (alias) =>
+          textosCompativeisRainforest(
+            ingredienteAtivo,
+            alias
+          )
       );
 
     }
-  );
+
+);
 
 }
 
-
-// =====================================================
-// ALIASES DO COMPONENTE
-//
-// Exemplo:
-// "Bórax; Boratos"
+// ===================================================== 
+// COMPARAR TEXTOS NORMALIZADOS 
 // =====================================================
 
-function obterAliasesComponente(
-  componente
-) {
+function textosCompativeisRainforest( textoA, textoB ) {
 
-  return String(
-    componente || ""
-  )
-    .split(";")
-    .map(
-      item =>
-        item.trim()
-    )
-    .filter(Boolean);
+const a = normalizarTextoRainforest( textoA );
+
+const b = normalizarTextoRainforest( textoB );
+
+if (!a || !b) { return false; }
+
+// Correspondência direta if ( a.includes(b) || b.includes(a) ) { return
+true; }
+
+const tokensA = a .split(” “) .filter( token => token.length >= 4 );
+
+const tokensB = b .split(” “) .filter( token => token.length >= 4 );
+
+if ( tokensA.length === 0 || tokensB.length === 0 ) { return false; }
+
+const comuns = tokensA.filter( token => tokensB.includes( token ) );
+
+const minimo = Math.min( tokensA.length, tokensB.length );
+
+return ( comuns.length >= 2 && comuns.length >= Math.ceil( minimo * 0.6
+) );
 
 }
 
-
+// ===================================================== 
+// ALIASES DO COMPONENTE // 
+// Exemplo: 
+// “Bórax; Boratos” 
 // =====================================================
-// RESULTADO PROIBIDO
+
+function obterAliasesComponente( componente ) {
+
+return String( componente || “” ) .split(“;”) .map( item => item.trim()
+) .filter(Boolean);
+
+}
+
+// ===================================================== 
+// RESULTADO PROIBIDO 
 // =====================================================
 
-function montarResultadoProibido(
-  correspondencias
-) {
+function montarResultadoProibido( correspondencias ) {
 
-  const componentes =
-    obterNomesComponentes(
-      correspondencias
-    );
+const componentes = obterNomesComponentes( correspondencias );
 
+const condicoes = obterTextosUnicos( correspondencias, “condicoes_uso”
+);
 
-  const condicoes =
-    obterTextosUnicos(
-      correspondencias,
-      "condicoes_uso"
-    );
+let detalhamento = Componente(s) restritivo(s): ${componentes}.;
 
-
-  let detalhamento =
-    `Componente(s) restritivo(s): ${componentes}.`;
-
-
-  if (condicoes.length > 0) {
+if (condicoes.length > 0) {
 
     detalhamento +=
       ` ${condicoes.join(" ")}`;
 
-  }
+}
 
-
-  return {
+return {
 
     classificacao:
       "PROIBIDO",
@@ -449,57 +336,30 @@ function montarResultadoProibido(
     detalhamento:
       detalhamento
 
-  };
+};
 
 }
 
-
+// ===================================================== 
+// RESULTADO USO EXCEPCIONAL 
 // =====================================================
-// RESULTADO USO EXCEPCIONAL
-// =====================================================
 
-function montarResultadoUsoExcepcional(
-  correspondencias,
-  excecoes,
-  cultura,
-  pragas
-) {
+function montarResultadoUsoExcepcional( correspondencias, excecoes,
+cultura, pragas ) {
 
-  const componentesRestritivos =
-    correspondencias.filter(
-      item =>
-        identificarTipoClassificacao(
-          item.classificacao
-        ) ===
-        "USO_EXCEPCIONAL"
-    );
+const componentesRestritivos = correspondencias.filter( item =>
+identificarTipoClassificacao( item.classificacao ) === “USO_EXCEPCIONAL”
+);
 
+const excecoesCorrespondentes = localizarExcecoesComponentes(
+componentesRestritivos, excecoes );
 
-  const excecoesCorrespondentes =
-    localizarExcecoesComponentes(
-      componentesRestritivos,
-      excecoes
-    );
+const excecoesValidas = excecoesCorrespondentes.filter( excecao =>
+excecaoAplicavel( excecao, cultura, pragas ) );
 
+// ————————————————— // EXISTE PUE APLICÁVEL // —————————————————
 
-  const excecoesValidas =
-    excecoesCorrespondentes.filter(
-      excecao =>
-        excecaoAplicavel(
-          excecao,
-          cultura,
-          pragas
-        )
-    );
-
-
-  // ---------------------------------------------------
-  // EXISTE PUE APLICÁVEL
-  // ---------------------------------------------------
-
-  if (
-    excecoesValidas.length > 0
-  ) {
+if ( excecoesValidas.length > 0 ) {
 
     const componentes =
       obterNomesComponentes(
@@ -559,15 +419,13 @@ function montarResultadoUsoExcepcional(
 
     };
 
-  }
+}
 
+// ————————————————— 
+// COMPONENTE É DE USO EXCEPCIONAL, 
+// MAS NÃO HÁ EXCEÇÃO COMPATÍVEL // —————————————————
 
-  // ---------------------------------------------------
-  // COMPONENTE É DE USO EXCEPCIONAL,
-  // MAS NÃO HÁ EXCEÇÃO COMPATÍVEL
-  // ---------------------------------------------------
-
-  return {
+return {
 
     classificacao:
       "USO EXCEPCIONAL",
@@ -578,45 +436,31 @@ function montarResultadoUsoExcepcional(
     detalhamento:
       "O ingrediente ativo possui classificação de uso excepcional, porém não foi localizada na base consultada uma condição de uso excepcional compatível com a cultura e os alvos selecionados."
 
-  };
+};
 
 }
 
-
+// ===================================================== 
+// RESULTADO  MITIGAÇÃO 
 // =====================================================
-// RESULTADO MITIGAÇÃO
-// =====================================================
 
-function montarResultadoMitigacao(
-  correspondencias
-) {
+function montarResultadoMitigacao( correspondencias ) {
 
-  const componentes =
-    obterNomesComponentes(
-      correspondencias
-    );
+const componentes = obterNomesComponentes( correspondencias );
 
+const condicoes = obterTextosUnicos( correspondencias, “condicoes_uso”
+);
 
-  const condicoes =
-    obterTextosUnicos(
-      correspondencias,
-      "condicoes_uso"
-    );
+let detalhamento = Componente(s): ${componentes}.;
 
-
-  let detalhamento =
-    `Componente(s): ${componentes}.`;
-
-
-  if (condicoes.length > 0) {
+if (condicoes.length > 0) {
 
     detalhamento +=
       ` ${condicoes.join(" ")}`;
 
-  }
+}
 
-
-  return {
+return {
 
     classificacao:
       "MITIGAÇÃO DE RISCO",
@@ -627,22 +471,17 @@ function montarResultadoMitigacao(
     detalhamento:
       detalhamento
 
-  };
+};
 
 }
 
+// ===================================================== 
+// LOCALIZAR EXCEÇÕES DOS COMPONENTES 
+//=====================================================
 
-// =====================================================
-// LOCALIZAR EXCEÇÕES DOS COMPONENTES
-// =====================================================
+function localizarExcecoesComponentes( componentes, excecoes ) {
 
-function localizarExcecoesComponentes(
-  componentes,
-  excecoes
-) {
-
-  return excecoes.filter(
-    excecao => {
+return excecoes.filter( excecao => {
 
       const aliasesExcecao =
         obterAliasesComponente(
@@ -676,294 +515,145 @@ function localizarExcecoesComponentes(
       );
 
     }
-  );
+
+);
 
 }
 
-
+// ===================================================== 
+// VALIDAR EXCEÇÃO 
 // =====================================================
-// VALIDAR EXCEÇÃO
-// =====================================================
 
-function excecaoAplicavel(
-  excecao,
-  culturaSelecionada,
-  pragasProduto
-) {
+function excecaoAplicavel( excecao, culturaSelecionada, pragasProduto )
+{
 
-  if (
-    !excecaoDentroDaValidade(
-      excecao
-    )
-  ) {
+if ( !excecaoDentroDaValidade( excecao ) ) {
 
     return false;
-
-  }
-
-
-  if (
-    !excecaoAplicavelAoBrasil(
-      excecao
-    )
-  ) {
-
-    return false;
-
-  }
-
-
-  if (
-    !excecaoAplicavelCultura(
-      excecao,
-      culturaSelecionada
-    )
-  ) {
-
-    return false;
-
-  }
-
-
-  if (
-    !excecaoAplicavelPraga(
-      excecao,
-      pragasProduto
-    )
-  ) {
-
-    return false;
-
-  }
-
-
-  return true;
 
 }
 
+if ( !excecaoAplicavelAoBrasil( excecao ) ) {
 
-// =====================================================
-// VALIDADE
-// =====================================================
-
-function excecaoDentroDaValidade(
-  excecao
-) {
-
-  if (!excecao.data_fim) {
-    return true;
-  }
-
-
-  const hoje =
-    new Date();
-
-
-  hoje.setHours(
-    0,
-    0,
-    0,
-    0
-  );
-
-
-  const dataFim =
-    new Date(
-      `${excecao.data_fim}T00:00:00`
-    );
-
-
-  return (
-    !Number.isNaN(
-      dataFim.getTime()
-    ) &&
-    dataFim >= hoje
-  );
+    return false;
 
 }
 
+if ( !excecaoAplicavelCultura( excecao, culturaSelecionada ) ) {
 
-// =====================================================
-// PAÍS
-// =====================================================
-
-function excecaoAplicavelAoBrasil(
-  excecao
-) {
-
-  const paises =
-    normalizarTextoRainforest(
-      excecao.paises
-    );
-
-
-  if (!paises) {
-    return true;
-  }
-
-
-  return (
-    paises.includes(
-      "todos os paises"
-    ) ||
-    paises.includes(
-      "todos"
-    ) ||
-    paises.includes(
-      "brasil"
-    )
-  );
+    return false;
 
 }
 
+if ( !excecaoAplicavelPraga( excecao, pragasProduto ) ) {
 
+    return false;
+
+}
+
+return true;
+
+}
+
+// ===================================================== 
+// VALIDADE 
 // =====================================================
-// CULTURA
+
+function excecaoDentroDaValidade( excecao ) {
+
+if (!excecao.data_fim) { return true; }
+
+const hoje = new Date();
+
+hoje.setHours( 0, 0, 0, 0 );
+
+const dataFim = new Date( ${excecao.data_fim}T00:00:00 );
+
+return ( !Number.isNaN( dataFim.getTime() ) && dataFim >= hoje );
+
+}
+
+// ===================================================== 
+// PAÍS 
 // =====================================================
 
-function excecaoAplicavelCultura(
-  excecao,
-  culturaSelecionada
-) {
+function excecaoAplicavelAoBrasil( excecao ) {
 
-  const culturaExcecao =
-    normalizarTextoRainforest(
-      excecao.cultura
-    );
+const paises = normalizarTextoRainforest( excecao.paises );
 
+if (!paises) { return true; }
 
-  const cultura =
-    normalizarTextoRainforest(
-      culturaSelecionada
-    );
+return ( paises.includes( “todos os paises” ) || paises.includes(
+“todos” ) || paises.includes( “brasil” ) );
 
+}
 
-  if (!culturaExcecao) {
-    return true;
-  }
+// ===================================================== 
+// CULTURA 
+// =====================================================
 
+function excecaoAplicavelCultura( excecao, culturaSelecionada ) {
 
-  if (
-    culturaExcecao.includes(
-      "todos os cultivos"
-    ) ||
-    culturaExcecao.includes(
-      "todas as culturas"
-    ) ||
-    culturaExcecao ===
-      "todos"
-  ) {
+const culturaExcecao = normalizarTextoRainforest( excecao.cultura );
+
+const cultura = normalizarTextoRainforest( culturaSelecionada );
+
+if (!culturaExcecao) { return true; }
+
+if ( culturaExcecao.includes( “todos os cultivos” ) ||
+culturaExcecao.includes( “todas as culturas” ) || culturaExcecao ===
+“todos” ) {
 
     return true;
 
-  }
+}
 
+if (!cultura) { return false; }
 
-  if (!cultura) {
-    return false;
-  }
-
-
-  return (
-    culturaExcecao.includes(
-      cultura
-    ) ||
-    cultura.includes(
-      culturaExcecao
-    )
-  );
+return ( culturaExcecao.includes( cultura ) || cultura.includes(
+culturaExcecao ) );
 
 }
 
-
-// =====================================================
+// ===================================================== 
 // PRAGA / ALVO
 // =====================================================
 
-function excecaoAplicavelPraga(
-  excecao,
-  pragasProduto
-) {
+function excecaoAplicavelPraga( excecao, pragasProduto ) {
 
-  const pragaExcecao =
-    normalizarTextoRainforest(
-      excecao.praga
-    );
+const pragaExcecao = normalizarTextoRainforest( excecao.praga );
 
-
-  if (
-    !pragaExcecao ||
-    pragaExcecao.includes(
-      "nao aplicavel"
-    ) ||
-    pragaExcecao.includes(
-      "todos"
-    )
-  ) {
+if ( !pragaExcecao || pragaExcecao.includes( “nao aplicavel” ) ||
+pragaExcecao.includes( “todos” ) ) {
 
     return true;
 
-  }
+}
 
+const pragas = normalizarTextoRainforest( pragasProduto );
 
-  const pragas =
-    normalizarTextoRainforest(
-      pragasProduto
-    );
+if (!pragas) { return false; }
 
+/ Como o campo Agrofit pode reunir vários alvos, fazemos uma comparação
+textual conservadora. /
 
-  if (!pragas) {
-    return false;
-  }
+const termos = String( excecao.praga || “” ) .split(/[;,]/) .map( termo
+=> normalizarTextoRainforest( termo ) ) .filter( termo =>
+termo.length >= 4 );
 
-
-  /*
-    Como o campo Agrofit pode reunir vários alvos,
-    fazemos uma comparação textual conservadora.
-  */
-
-  const termos =
-    String(
-      excecao.praga || ""
-    )
-      .split(/[;,]/)
-      .map(
-        termo =>
-          normalizarTextoRainforest(
-            termo
-          )
-      )
-      .filter(
-        termo =>
-          termo.length >= 4
-      );
-
-
-  return termos.some(
-    termo =>
-      pragas.includes(
-        termo
-      )
-  );
+return termos.some( termo => pragas.includes( termo ) );
 
 }
 
-
+// ===================================================== 
+// PESO DA CLASSIFICAÇÃO 
 // =====================================================
-// PESO DA CLASSIFICAÇÃO
-// =====================================================
 
-function obterPesoClassificacao(
-  classificacao
-) {
+function obterPesoClassificacao( classificacao ) {
 
-  const tipo =
-    identificarTipoClassificacao(
-      classificacao
-    );
+const tipo = identificarTipoClassificacao( classificacao );
 
-
-  switch (tipo) {
+switch (tipo) {
 
     case "PROIBIDO":
       return 400;
@@ -977,125 +667,89 @@ function obterPesoClassificacao(
     default:
       return 100;
 
-  }
+}
 
 }
 
-
+// ===================================================== 
+// IDENTIFICAR CLASSIFICAÇÃO 
 // =====================================================
-// IDENTIFICAR CLASSIFICAÇÃO
-// =====================================================
 
-function identificarTipoClassificacao(
-  classificacao
-) {
+function identificarTipoClassificacao( classificacao ) {
 
-  const texto =
-    normalizarTextoRainforest(
-      classificacao
-    );
+const texto = normalizarTextoRainforest( classificacao );
 
-
-  if (
-    texto.includes(
-      "proibid"
-    )
-  ) {
+if ( texto.includes( “proibid” ) ) {
 
     return "PROIBIDO";
 
-  }
+}
 
-
-  if (
-    texto.includes(
-      "uso_excepcional"
-    ) ||
-    texto.includes(
-      "uso excepcional"
-    ) ||
-    texto.includes(
-      "excepcional"
-    )
-  ) {
+if ( texto.includes( “uso_excepcional” ) || texto.includes( “uso
+excepcional” ) || texto.includes( “excepcional” ) ) {
 
     return "USO_EXCEPCIONAL";
 
-  }
+}
 
-
-  if (
-    texto.includes(
-      "mitig"
-    )
-  ) {
+if ( texto.includes( “mitig” ) ) {
 
     return "MITIGACAO";
 
-  }
+}
 
-
-  return "OUTRO";
+return “OUTRO”;
 
 }
 
-
+// ===================================================== 
+// FORMATAR CLASSIFICAÇÃO 
 // =====================================================
-// FORMATAR CLASSIFICAÇÃO
-// =====================================================
 
-function formatarClassificacaoRainforest(
-  classificacao
-) {
+function formatarClassificacaoRainforest( classificacao ) {
 
-  return String(
-    classificacao || ""
-  )
-    .replace(/_/g, " ")
-    .trim()
-    .toUpperCase();
+return String( classificacao || “” ) .replace(/_/g, ” “) .trim()
+.toUpperCase();
 
 }
 
-
+// ===================================================== 
+// NORMALIZAÇÃO 
 // =====================================================
-// NORMALIZAÇÃO
-// =====================================================
 
-function normalizarTextoRainforest(
-  valor
-) {
+function normalizarTextoRainforest(valor) {
 
-  return String(valor || "")
-    .normalize("NFD")
-    .replace(
-      /[\u0300-\u036f]/g,
-      ""
-    )
-    .toLowerCase()
-    .replace(
-      /\s+/g,
-      " "
-    )
+return String(valor || ““) .normalize(”NFD”) .replace(/[300-36f]/g, ““)
+.toLowerCase()
+
+    // remove conteúdo entre parênteses
+    .replace(/\([^)]*\)/g, " ")
+
+    // padroniza variações químicas comuns
+    .replace(/\bsal de\b/g, " ")
+    .replace(/\bsal\b/g, " ")
+    .replace(/\be isomeros\b/g, " ")
+    .replace(/\bisomeros\b/g, " ")
+    .replace(/\bde\b/g, " ")
+
+    // remove separadores
+    .replace(/[-_,;:+/]/g, " ")
+
+    // limpa espaços
+    .replace(/\s+/g, " ")
     .trim();
 
 }
 
-
+// ===================================================== 
+// COMPONENTES ÚNICOS 
 // =====================================================
-// COMPONENTES ÚNICOS
-// =====================================================
 
-function obterNomesComponentes(
-  registros
-) {
+function obterNomesComponentes( registros ) {
 
-  const valores =
-    new Map();
+const valores = new Map();
 
-
-  registros.forEach(
-    registro => {
+registros.forEach( registro => {
 
       const valor =
         String(
@@ -1126,31 +780,22 @@ function obterNomesComponentes(
       }
 
     }
-  );
 
+);
 
-  return Array.from(
-    valores.values()
-  ).join("; ");
+return Array.from( valores.values() ).join(“;”);
 
 }
 
-
+// ===================================================== 
+// TEXTOS ÚNICOS 
 // =====================================================
-// TEXTOS ÚNICOS
-// =====================================================
 
-function obterTextosUnicos(
-  registros,
-  campo
-) {
+function obterTextosUnicos( registros, campo ) {
 
-  const valores =
-    new Map();
+const valores = new Map();
 
-
-  registros.forEach(
-    registro => {
+registros.forEach( registro => {
 
       const valor =
         String(
@@ -1181,137 +826,82 @@ function obterTextosUnicos(
       }
 
     }
-  );
 
+);
 
-  return Array.from(
-    valores.values()
-  );
+return Array.from( valores.values() );
 
 }
 
+// ===================================================== // VALIDADE DAS
+EXCEÇÕES // =====================================================
 
-// =====================================================
-// VALIDADE DAS EXCEÇÕES
-// =====================================================
+function obterValidadesExcecao( registros ) {
 
-function obterValidadesExcecao(
-  registros
-) {
+const datas = registros .map( item => item.data_fim ) .filter(Boolean);
 
-  const datas =
-    registros
-      .map(
-        item =>
-          item.data_fim
-      )
-      .filter(Boolean);
-
-
-  if (
-    datas.length === 0
-  ) {
+if ( datas.length === 0 ) {
 
     return "";
-
-  }
-
-
-  const datasFormatadas =
-    Array.from(
-      new Set(datas)
-    ).map(
-      formatarDataRainforest
-    );
-
-
-  return datasFormatadas.join(
-    ", "
-  );
 
 }
 
+const datasFormatadas = Array.from( new Set(datas) ).map(
+formatarDataRainforest );
 
+return datasFormatadas.join( “,” );
+
+}
+
+// ===================================================== 
+// FORMATAR DATA 
 // =====================================================
-// FORMATAR DATA
-// =====================================================
 
-function formatarDataRainforest(
-  data
-) {
+function formatarDataRainforest( data ) {
 
-  if (!data) {
-    return "";
-  }
+if (!data) { return ““; }
 
+const partes = String(data).split(“-”);
 
-  const partes =
-    String(data).split("-");
-
-
-  if (
-    partes.length !== 3
-  ) {
+if ( partes.length !== 3 ) {
 
     return String(data);
 
-  }
+}
 
-
-  return (
-    `${partes[2]}/${partes[1]}/${partes[0]}`
-  );
+return ( ${partes[2]}/${partes[1]}/${partes[0]} );
 
 }
 
-
+// ===================================================== 
+// DETALHAMENTOGENÉRICO 
 // =====================================================
-// DETALHAMENTO GENÉRICO
-// =====================================================
 
-function montarDetalhamentoComponentes(
-  registros
-) {
+function montarDetalhamentoComponentes( registros ) {
 
-  const componentes =
-    obterNomesComponentes(
-      registros
-    );
+const componentes = obterNomesComponentes( registros );
 
+const condicoes = obterTextosUnicos( registros, “condicoes_uso” );
 
-  const condicoes =
-    obterTextosUnicos(
-      registros,
-      "condicoes_uso"
-    );
+const partes = [];
 
-
-  const partes = [];
-
-
-  if (componentes) {
+if (componentes) {
 
     partes.push(
       `Componente(s): ${componentes}.`
     );
 
-  }
+}
 
-
-  if (
-    condicoes.length > 0
-  ) {
+if ( condicoes.length > 0 ) {
 
     partes.push(
       condicoes.join(" ")
     );
 
-  }
+}
 
-
-  return (
-    partes.join(" ") ||
-    "Consulte as condições aplicáveis à classificação encontrada."
-  );
+return ( partes.join(” “) ||”Consulte as condições aplicáveis à
+classificação encontrada.” );
 
 }
