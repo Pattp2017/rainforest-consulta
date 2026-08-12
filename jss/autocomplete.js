@@ -20,7 +20,7 @@ let indiceSugestaoAtiva = -1;
 // CONFIGURAÇÃO
 // =====================================================
 
-const TEMPO_AUTOCOMPLETE = 300;
+const TEMPO_AUTOCOMPLETE =400;
 
 const MINIMO_CARACTERES_AUTOCOMPLETE = 3;
 
@@ -263,7 +263,7 @@ function exibirSugestoesProdutos(
   }
 
 
-  produtos.forEach(
+  produtos.slice(0, 20).forEach(
     (produto, indice) => {
 
       const item =
