@@ -1,4 +1,4 @@
-/ =====================================================
+// =====================================================
 // RAINFOREST
 // Classificação dos componentes e validação de PUE
 // Projeto: Rainforest Consulta
