@@ -461,59 +461,6 @@ function obterAliasesComponente(
 // RESULTADO PROIBIDO
 // =====================================================
 
-function montarResultadoProibido(
-  correspondencias
-) {
-
-  const componentes =
-    obterNomesComponentes(
-      correspondencias
-    );
-
-
-  const condicoes =
-    obterTextosUnicos(
-      correspondencias,
-      "condicoes_uso"
-    );
-
-
-  let detalhamento =
-    `Componente(s) restritivo(s): ${componentes}.`;
-
-
-  if (condicoes.length > 0) {
-
-    detalhamento +=
-      ` ${condicoes.join(" ")}`;
-
-  }
-
-
-  return {
-
-    classificacao:
-      "PROIBIDO",
-
-    permissao:
-      "NÃO UTILIZAR",
-
-    detalhamento:
-      detalhamento
-
-  };
-
-}
-
-
-// =====================================================
-// RESULTADO PROIBIDO COM CONTEXTO DE PUE
-//
-// Se houver PUE para o mesmo componente e cultura,
-// mas não aplicável ao Brasil, explicamos isso sem
-// exibir condições como se fossem válidas para o país.
-// =====================================================
-
 function montarResultadoProibidoComContextoPue(
   correspondencias,
   excecoes,
@@ -525,13 +472,11 @@ function montarResultadoProibidoComContextoPue(
       correspondencias
     );
 
-
   const excecoesCorrespondentes =
     localizarExcecoesComponentes(
       correspondencias,
       excecoes
     );
-
 
   const excecoesMesmaCultura =
     excecoesCorrespondentes.filter(
@@ -545,7 +490,6 @@ function montarResultadoProibidoComContextoPue(
         )
     );
 
-
   const excecoesBrasil =
     excecoesMesmaCultura.filter(
       excecao =>
@@ -555,8 +499,76 @@ function montarResultadoProibidoComContextoPue(
     );
 
 
-  // Se houver exceção válida para a cultura, mas nenhuma
-  // delas for aplicável ao Brasil, explicamos claramente.
+  // ===================================================
+  // EXISTE PUE VÁLIDA PARA CULTURA + BRASIL
+  // ===================================================
+
+  if (
+    excecoesBrasil.length > 0
+  ) {
+
+    const condicoes =
+      obterTextosUnicos(
+        excecoesBrasil,
+        "condicoes_uso"
+      );
+
+    const validade =
+      obterValidadesExcecao(
+        excecoesBrasil
+      );
+
+    const partes = [];
+
+    partes.push(
+      `Componente: ${componentes}.`
+    );
+
+    partes.push(
+      `O componente possui proibição geral, porém foi identificada uma autorização de uso excepcional aplicável à cultura ${cultura} no Brasil.`
+    );
+
+    if (
+      condicoes.length > 0
+    ) {
+
+      partes.push(
+        `Condições: ${condicoes.join(" ")}`
+      );
+
+    }
+
+    if (
+      validade
+    ) {
+
+      partes.push(
+        `Validade da autorização excepcional: ${validade}.`
+      );
+
+    }
+
+
+    return {
+
+      classificacao:
+        "USO EXCEPCIONAL",
+
+      permissao:
+        "SOMENTE NAS CONDIÇÕES DA PUE",
+
+      detalhamento:
+        partes.join(" ")
+
+    };
+
+  }
+
+
+  // ===================================================
+  // EXISTE PUE PARA CULTURA, MAS NÃO PARA O BRASIL
+  // ===================================================
+
   if (
     excecoesMesmaCultura.length > 0 &&
     excecoesBrasil.length === 0
@@ -568,21 +580,20 @@ function montarResultadoProibidoComContextoPue(
         "paises"
       );
 
-
     const partes = [
       `Componente restritivo: ${componentes}.`,
       `Existe PUE para a cultura ${cultura || "consultada"}, porém a exceção identificada não é aplicável ao Brasil.`
     ];
 
-
-    if (paises.length > 0) {
+    if (
+      paises.length > 0
+    ) {
 
       partes.push(
         `País(es) contemplado(s) pela PUE: ${paises.join("; ")}.`
       );
 
     }
-
 
     partes.push(
       "Não foi identificada autorização de uso excepcional aplicável ao uso consultado no Brasil."
@@ -605,7 +616,10 @@ function montarResultadoProibidoComContextoPue(
   }
 
 
-  // Caso padrão: proibido sem PUE aplicável/relevante.
+  // ===================================================
+  // PROIBIDO SEM PUE APLICÁVEL
+  // ===================================================
+
   return {
 
     classificacao:
