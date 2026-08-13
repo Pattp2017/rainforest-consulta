@@ -123,31 +123,40 @@ body { min-height: 100vh; }
 
 #cardProduto > .card-title { grid-column: 1 / -1; }
 
-/* Nome comercial */
+/* =========================================================
+   DISTRIBUIÇÃO DOS DADOS DO PRODUTO
+========================================================= */
+
+/* Nome comercial - linha 1 / esquerda */
 #cardProduto > .data-row:nth-of-type(1) {
-  grid-column: span 4;
+  grid-column: 1 / 3;
+  grid-row: 2;
 }
 
-/* Registro MAPA */
+/* Registro MAPA - linha 1 / direita */
 #cardProduto > .data-row:nth-of-type(2) {
-  grid-column: span 2;
+  grid-column: 3 / 7;
+  grid-row: 2;
 }
 
-/* Ingrediente(s) ativo(s) */
+/* Ingrediente(s) ativo(s) - linha 2 / esquerda */
 #cardProduto > .data-row:nth-of-type(3) {
-  grid-column: span 2;
+  grid-column: 1 / 3;
+  grid-row: 3;
 }
 
-/* Classe agronômica */
+/* Classe agronômica - linha 2 / direita */
 #cardProduto > .data-row:nth-of-type(4) {
-  grid-column: span 4;
+  grid-column: 3 / 7;
+  grid-row: 3;
 }
 
-/* Pragas / alvos - linha inteira */
+/* Pragas / alvos - linha 3 inteira */
 #cardProduto > .data-row:nth-of-type(5) {
-  grid-column: 1 / -1;
+  grid-column: 1 / 7;
+  grid-row: 4;
 }
-
+me 
 #cardProduto > .data-row {
   width: 100%;
   min-width: 0;
