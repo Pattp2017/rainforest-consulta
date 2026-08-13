@@ -1332,6 +1332,9 @@ function normalizarTextoRainforest(valor) {
     // à comparação textual.
     .replace(/[-_,;:+/]/g, " ")
 
+    // Equivalência de nomenclatura Agrofit x Rainforest
+    .replace(/\bimidacloprido\b/g, "imidacloprida")
+    
     .replace(/\s+/g, " ")
     .trim();
 
