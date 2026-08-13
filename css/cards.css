@@ -1,575 +1,370 @@
 /* =========================================================
-   CARDS BASE
+   CARDS — DARK / NEON
 ========================================================= */
 
 .card {
   width: 100%;
-  padding: 18px;
-
-  background: rgba(255, 255, 255, 0.88);
-
-  border: 1px solid rgba(20, 52, 86, 0.12);
-  border-radius: 16px;
-
-  box-shadow:
-    0 8px 24px rgba(20, 52, 86, 0.10);
-
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  padding: 15px;
+  background: linear-gradient(180deg, rgba(8, 31, 21, 0.92), rgba(5, 20, 14, 0.92));
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  box-shadow: var(--shadow-panel), var(--glow-verde);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
-
-
-/* =========================================================
-   TÍTULO DOS CARDS
-========================================================= */
 
 .card-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 12px;
-
-  padding-bottom: 10px;
-  margin-bottom: 14px;
-
-  font-size: 1.05rem;
-  font-weight: 700;
-
-  color: #173a5e;
-
-  border-bottom: 1px solid rgba(23, 58, 94, 0.16);
+  padding-bottom: 9px;
+  margin-bottom: 11px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--verde-neon);
+  border-bottom: 1px solid rgba(109, 255, 138, 0.12);
 }
-
-
-/* =========================================================
-   CARD DE CONSULTA
-========================================================= */
 
 .card-consulta {
-  background: rgba(255, 255, 255, 0.92);
+  padding: 14px 15px 13px;
+  background: linear-gradient(180deg, rgba(9, 34, 23, 0.96), rgba(5, 20, 14, 0.94));
+  border-color: rgba(109, 255, 138, 0.32);
 }
 
-.card-consulta .card-title {
-  color: #173a5e;
-}
-
-
-/* =========================================================
-   CULTURAS
-========================================================= */
-
-.culture-title {
-  font-size: 0.95rem;
-  font-weight: 700;
-
-  color: #173a5e;
-}
+.card-consulta .card-title { margin-bottom: 10px; }
 
 .culture-button {
-  border: 1px solid rgba(23, 58, 94, 0.18);
-  border-radius: 12px;
-
-  background: rgba(255, 255, 255, 0.82);
-
-  color: #173a5e;
-
-  font-size: 0.92rem;
-  font-weight: 700;
-
+  border: 1px solid rgba(109, 255, 138, 0.22);
+  border-radius: 999px;
+  background: rgba(4, 17, 11, 0.76);
+  color: var(--texto-suave);
+  font-size: 0.82rem;
+  font-weight: 750;
   cursor: pointer;
-
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease,
     border-color 0.15s ease,
-    background 0.15s ease;
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .culture-button:hover {
   transform: translateY(-1px);
-
-  border-color: rgba(23, 58, 94, 0.38);
-
-  box-shadow:
-    0 5px 14px rgba(23, 58, 94, 0.12);
+  border-color: rgba(109, 255, 138, 0.58);
+  color: var(--texto);
+  box-shadow: 0 0 16px rgba(109, 255, 138, 0.08);
 }
 
 .culture-button.active,
 .culture-button.selecionada {
-  background: #173a5e;
-  color: #ffffff;
-
-  border-color: #173a5e;
-
-  box-shadow:
-    0 5px 14px rgba(23, 58, 94, 0.22);
+  background: rgba(109, 255, 138, 0.15);
+  color: var(--verde-neon);
+  border-color: var(--verde-neon);
+  box-shadow: 0 0 18px rgba(109, 255, 138, 0.12);
 }
 
-
-/* =========================================================
-   CLASSIFICAÇÃO PRINCIPAL
-========================================================= */
-
 .classificacao-principal {
-  padding: 12px 14px;
-
-  background: rgba(255, 255, 255, 0.88);
+  padding: 11px 13px;
+  background: linear-gradient(90deg, rgba(9, 32, 22, 0.98), rgba(5, 20, 14, 0.96));
+  border-color: rgba(109, 255, 138, 0.34);
 }
 
 .classificacao-label {
-  padding: 0 14px;
-
-  font-size: 1rem;
-  font-weight: 700;
-
-  color: #173a5e;
+  padding: 0 12px;
+  font-size: 0.88rem;
+  font-weight: 850;
+  letter-spacing: 0.07em;
+  color: var(--verde-neon);
 }
 
 .classificacao-resultado {
-  padding: 12px 18px;
-
-  border-radius: 12px;
-
-  font-size: 1rem;
-  font-weight: 800;
-
-  letter-spacing: 0.02em;
-
+  padding: 11px 17px;
+  border-radius: 10px;
+  font-size: 0.94rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
   transition:
     background 0.2s ease,
     color 0.2s ease,
+    border-color 0.2s ease,
     box-shadow 0.2s ease;
 }
 
-
-/* =========================================================
-   ESTADOS DA CLASSIFICAÇÃO
-========================================================= */
-
 .classificacao-resultado.aguardando {
-  background: #e8eef3;
-
-  color: #526a7d;
-
-  border: 1px solid #c8d5df;
+  background: rgba(112, 145, 127, 0.10);
+  color: var(--texto-muted);
+  border: 1px solid rgba(145, 177, 159, 0.16);
 }
 
 .classificacao-resultado.proibido {
-  background: #8f1d1d;
-
-  color: #ffffff;
-
-  border: 1px solid #741515;
-
-  box-shadow:
-    0 6px 18px rgba(143, 29, 29, 0.28);
+  background: rgba(255, 74, 88, 0.14);
+  color: #ff8993;
+  border: 1px solid rgba(255, 95, 109, 0.46);
+  box-shadow: 0 0 24px rgba(255, 95, 109, 0.10);
 }
 
 .classificacao-resultado.uso-excepcional {
-  background: #f4a261;
-
-  color: #572b00;
-
-  border: 1px solid #df8f4e;
-
-  box-shadow:
-    0 6px 18px rgba(244, 162, 97, 0.30);
+  background: rgba(255, 173, 94, 0.14);
+  color: #ffc48a;
+  border: 1px solid rgba(255, 182, 110, 0.48);
+  box-shadow: 0 0 24px rgba(255, 182, 110, 0.10);
 }
 
 .classificacao-resultado.mitigacao {
-  background: #f2cf63;
-
-  color: #4e4100;
-
-  border: 1px solid #d8b949;
-
-  box-shadow:
-    0 6px 18px rgba(242, 207, 99, 0.28);
+  background: rgba(246, 217, 106, 0.13);
+  color: #ffe78c;
+  border: 1px solid rgba(246, 217, 106, 0.46);
+  box-shadow: 0 0 24px rgba(246, 217, 106, 0.09);
 }
 
 .classificacao-resultado.liberado,
 .classificacao-resultado.sem-restricao {
-  background: #4f8b68;
-
-  color: #ffffff;
-
-  border: 1px solid #3f7356;
-
-  box-shadow:
-    0 6px 18px rgba(79, 139, 104, 0.26);
+  background: rgba(67, 223, 113, 0.13);
+  color: var(--verde-neon);
+  border: 1px solid rgba(109, 255, 138, 0.46);
+  box-shadow: 0 0 24px rgba(109, 255, 138, 0.10);
 }
-
-
-/* =========================================================
-   DADOS DO PRODUTO
-========================================================= */
 
 .card-dados {
-  background: rgba(255, 255, 255, 0.90);
+  background: linear-gradient(180deg, rgba(8, 30, 20, 0.94), rgba(5, 18, 13, 0.94));
 }
 
-.data-row {
-  padding: 8px 0;
-
-  border-bottom: 1px solid rgba(23, 58, 94, 0.06);
+#cardProduto > .data-row {
+  padding: 12px 13px;
+  border: 1px solid rgba(109, 255, 138, 0.12);
+  border-radius: 11px;
+  background: rgba(3, 15, 10, 0.52);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.01);
 }
 
-.data-row:last-child {
-  border-bottom: none;
+#cardProduto > .data-row:nth-of-type(1),
+#cardProduto > .data-row:nth-of-type(2) {
+  min-height: 82px;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(15, 56, 36, 0.72), rgba(5, 21, 14, 0.74));
+  border-color: rgba(109, 255, 138, 0.22);
+}
+
+#cardProduto > .data-row:nth-of-type(3),
+#cardProduto > .data-row:nth-of-type(4),
+#cardProduto > .data-row:nth-of-type(5) {
+  min-height: 112px;
 }
 
 .data-label {
-  font-weight: 700;
-
-  color: #173a5e;
+  font-size: 0.75rem;
+  font-weight: 850;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--verde-neon);
 }
 
 .data-value {
-  color: #243746;
-
+  color: var(--texto);
+  font-size: 0.94rem;
   line-height: 1.45;
 }
 
+#cardProduto > .data-row:nth-of-type(1) .data-value {
+  font-size: 1.12rem;
+  font-weight: 850;
+  color: #ffffff;
+}
 
-/* =========================================================
-   CARD PODE UTILIZAR
-========================================================= */
+#cardProduto > .data-row:nth-of-type(2) .data-value {
+  font-size: 1.05rem;
+  font-weight: 850;
+  color: var(--verde-neon);
+}
 
 .card-permissao {
-  padding: 10px 14px;
-
-  background: rgba(255, 255, 255, 0.90);
+  padding: 9px 12px;
+  background: rgba(6, 22, 15, 0.90);
 }
 
 .permissao-pergunta {
-  padding: 10px 14px;
-
+  padding: 9px 12px;
+  font-size: 0.88rem;
   font-weight: 800;
-
-  color: #173a5e;
+  color: var(--texto-suave);
 }
 
 .permissao-resposta {
-  padding: 12px 16px;
-
-  border-radius: 12px;
-
-  font-weight: 800;
-
-  letter-spacing: 0.01em;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
 }
 
 .permissao-resposta.aguardando {
-  background: #e8eef3;
-
-  color: #526a7d;
+  background: rgba(117, 145, 130, 0.10);
+  color: var(--texto-muted);
+  border: 1px solid rgba(117, 145, 130, 0.16);
 }
 
 .permissao-resposta.proibido {
-  background: #f7dada;
-
-  color: #8f1d1d;
-
-  border: 1px solid #e7b7b7;
+  background: rgba(255, 95, 109, 0.11);
+  color: #ff8993;
+  border: 1px solid rgba(255, 95, 109, 0.34);
 }
 
 .permissao-resposta.uso-excepcional {
-  background: #ffe0c5;
-
-  color: #8c4300;
-
-  border: 1px solid #f6bd8d;
+  background: rgba(255, 182, 110, 0.11);
+  color: #ffc48a;
+  border: 1px solid rgba(255, 182, 110, 0.34);
 }
 
 .permissao-resposta.mitigacao {
-  background: #fff0b7;
-
-  color: #6a5600;
-
-  border: 1px solid #ecd579;
+  background: rgba(246, 217, 106, 0.10);
+  color: #ffe78c;
+  border: 1px solid rgba(246, 217, 106, 0.32);
 }
 
 .permissao-resposta.liberado,
 .permissao-resposta.sem-restricao {
-  background: #dcefe4;
-
-  color: #2f6848;
-
-  border: 1px solid #b8d9c5;
+  background: rgba(109, 255, 138, 0.10);
+  color: var(--verde-neon);
+  border: 1px solid rgba(109, 255, 138, 0.32);
 }
-
-
-/* =========================================================
-   BADGES
-========================================================= */
 
 .badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  min-height: 30px;
-
-  padding: 6px 12px;
-
+  min-height: 28px;
+  padding: 6px 11px;
   border-radius: 999px;
-
-  font-size: 0.76rem;
-  font-weight: 800;
-
+  font-size: 0.72rem;
+  font-weight: 850;
   line-height: 1;
-
   text-transform: uppercase;
-
   white-space: nowrap;
 }
 
 .badge-info {
-  background: #66889b;
-
-  color: #ffffff;
+  background: rgba(111, 200, 255, 0.14);
+  color: #a5dcff;
+  border: 1px solid rgba(111, 200, 255, 0.26);
 }
 
 .badge-danger,
 .badge-proibido {
-  background: #8f1d1d;
-
-  color: #ffffff;
+  background: rgba(255, 95, 109, 0.14);
+  color: #ff8993;
+  border: 1px solid rgba(255, 95, 109, 0.30);
 }
 
 .badge-warning,
 .badge-excepcional {
-  background: #f4a261;
-
-  color: #572b00;
+  background: rgba(255, 182, 110, 0.14);
+  color: #ffc48a;
+  border: 1px solid rgba(255, 182, 110, 0.30);
 }
 
 .badge-mitigacao {
-  background: #f2cf63;
-
-  color: #4e4100;
+  background: rgba(246, 217, 106, 0.13);
+  color: #ffe78c;
+  border: 1px solid rgba(246, 217, 106, 0.30);
 }
 
 .badge-success,
 .badge-liberado {
-  background: #4f8b68;
-
-  color: #ffffff;
+  background: rgba(109, 255, 138, 0.13);
+  color: var(--verde-neon);
+  border: 1px solid rgba(109, 255, 138, 0.30);
 }
 
+#cardUsoExcepcional { border-left: 4px solid var(--laranja); }
+#cardUsoExcepcional .card-title { color: #ffc48a; }
 
-/* =========================================================
-   USO EXCEPCIONAL
-========================================================= */
+#cardMitigacao { border-left: 4px solid var(--amarelo); }
+#cardMitigacao .card-title { color: #ffe78c; }
 
-#cardUsoExcepcional {
-  border-left: 5px solid #f4a261;
+#cardFundamentacao { border-left: 4px solid var(--azul); }
+#cardFundamentacao .card-title { color: #a5dcff; }
+
+#cardDetalhamento {
+  border-color: rgba(109, 255, 138, 0.24);
+  background: linear-gradient(180deg, rgba(8, 31, 21, 0.96), rgba(4, 17, 11, 0.96));
 }
-
-#cardUsoExcepcional .card-title {
-  color: #9b4d0b;
-}
-
-
-/* =========================================================
-   MITIGAÇÃO
-========================================================= */
-
-#cardMitigacao {
-  border-left: 5px solid #e5bd38;
-}
-
-#cardMitigacao .card-title {
-  color: #725f00;
-}
-
-
-/* =========================================================
-   FUNDAMENTAÇÃO
-========================================================= */
-
-#cardFundamentacao {
-  border-left: 5px solid #496f91;
-}
-
-#cardFundamentacao .card-title {
-  color: #173a5e;
-}
-
-
-/* =========================================================
-   CAIXAS DE TEXTO
-========================================================= */
 
 .text-box {
-  min-height: 70px;
-
-  padding: 12px 14px;
-
-  border: 1px solid rgba(23, 58, 94, 0.12);
-  border-radius: 10px;
-
-  background: rgba(242, 246, 249, 0.88);
-
-  color: #243746;
-
-  line-height: 1.5;
+  min-height: 92px;
+  padding: 14px 15px;
+  border: 1px solid rgba(109, 255, 138, 0.15);
+  border-radius: 11px;
+  background: rgba(3, 14, 9, 0.66);
+  color: var(--texto-suave);
+  font-size: 0.91rem;
+  line-height: 1.60;
 }
 
-
-/* =========================================================
-   PILLS
-========================================================= */
-
-.pill-container {
-  padding-top: 4px;
-}
+.pill-container { padding-top: 3px; }
 
 .pill,
 .country-pill {
   display: inline-flex;
   align-items: center;
-
   padding: 6px 10px;
-
   border-radius: 999px;
-
-  background: #e6edf3;
-
-  color: #173a5e;
-
-  font-size: 0.8rem;
-  font-weight: 700;
-
-  border: 1px solid rgba(23, 58, 94, 0.10);
+  background: rgba(109, 255, 138, 0.08);
+  color: var(--verde-neon);
+  font-size: 0.77rem;
+  font-weight: 750;
+  border: 1px solid rgba(109, 255, 138, 0.16);
 }
-
-
-/* =========================================================
-   STATUS DA CONCILIAÇÃO
-========================================================= */
-
-.card-conciliacao {
-  padding: 10px 14px;
-
-  background: rgba(255, 255, 255, 0.88);
-}
-
-.conciliacao-label {
-  padding: 0 14px;
-
-  font-weight: 700;
-
-  color: #173a5e;
-}
-
-.conciliacao-status {
-  padding: 10px 16px;
-
-  border-radius: 12px;
-
-  font-weight: 800;
-}
-
-.conciliacao-status.aguardando {
-  background: #e8eef3;
-
-  color: #526a7d;
-}
-
-.conciliacao-status.conciliado {
-  background: #dcefe4;
-
-  color: #2f6848;
-
-  border: 1px solid #b8d9c5;
-}
-
-.conciliacao-status.nao-conciliado {
-  background: #f7dada;
-
-  color: #8f1d1d;
-
-  border: 1px solid #e7b7b7;
-}
-
-
-/* =========================================================
-   ERRO
-========================================================= */
 
 .error-box {
-  padding: 10px 12px;
-
+  padding: 9px 11px;
   border-radius: 10px;
-
-  background: #fbe2e2;
-
-  color: #8f1d1d;
-
-  border: 1px solid #efc0c0;
-
-  font-size: 0.9rem;
+  background: rgba(255, 95, 109, 0.09);
+  color: #ff9aa3;
+  border: 1px solid rgba(255, 95, 109, 0.22);
+  font-size: 0.84rem;
 }
-
-
-/* =========================================================
-   CARREGAMENTO
-========================================================= */
 
 .loading {
-  padding: 10px 12px;
-
+  padding: 9px 11px;
   border-radius: 10px;
-
-  background: #edf3f7;
-
-  color: #48677c;
-
-  font-size: 0.9rem;
+  background: rgba(111, 200, 255, 0.08);
+  color: #a5dcff;
+  border: 1px solid rgba(111, 200, 255, 0.18);
+  font-size: 0.84rem;
 }
 
-
-/* =========================================================
-   RESPONSIVIDADE
-========================================================= */
-
-@media (max-width: 850px) {
-
-  .card {
-    padding: 14px;
-  }
-
-  .classificacao-label,
-  .conciliacao-label {
-    padding: 0;
-  }
+@media (max-width: 900px) {
+  .card { padding: 13px; }
+  .classificacao-label { padding: 0; }
 
   .classificacao-resultado,
-  .permissao-resposta,
-  .conciliacao-status {
+  .permissao-resposta {
     width: 100%;
+  }
+
+  #cardProduto > .data-row:nth-of-type(3),
+  #cardProduto > .data-row:nth-of-type(4),
+  #cardProduto > .data-row:nth-of-type(5) {
+    min-height: 96px;
   }
 }
 
-@media (max-width: 520px) {
-
-  .card {
-    border-radius: 12px;
-  }
-
-  .card-title {
-    font-size: 0.98rem;
-  }
+@media (max-width: 600px) {
+  .card { border-radius: 11px; }
+  .card-title { font-size: 0.84rem; }
 
   .badge {
     white-space: normal;
-
     text-align: center;
   }
 
-  .classificacao-resultado {
-    font-size: 0.92rem;
+  .classificacao-resultado { font-size: 0.88rem; }
+
+  #cardProduto > .data-row {
+    min-height: auto !important;
   }
 }
