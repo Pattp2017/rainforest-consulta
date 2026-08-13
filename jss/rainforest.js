@@ -13,7 +13,7 @@ const TABELA_RAINFOREST_COMPONENTES =
   "rainforest_componentes";
 
 const TABELA_RAINFOREST_USO_EXCEPCIONAL =
-  "rainforest_uso_excepcional";
+  "rainforest_uso_excepcional_novo";
 
 
 // =====================================================
