@@ -148,40 +148,15 @@ async function consultarClassificacaoRainforest(
 
 
   // ===================================================
-  // PRIORIDADE DA PUE
-  //
-  // Um componente pode estar na lista de PROIBIDOS e,
-  // ao mesmo tempo, possuir uma exceção válida na PUE
-  // para cultura/praga/país/período específicos.
-  //
-  // Por isso, a PUE precisa ser verificada ANTES de
-  // concluir definitivamente como PROIBIDO.
-  // ===================================================
-
-  const resultadoPuePrioritaria =
-    montarResultadoPueSeAplicavel(
-      correspondenciasOrdenadas,
-      excecoes,
-      cultura,
-      pragas
-    );
-
-
-  if (resultadoPuePrioritaria) {
-
-    return resultadoPuePrioritaria;
-
-  }
-
-
-  // ===================================================
   // PROIBIDO
   // ===================================================
 
   if (tipo === "PROIBIDO") {
 
-    return montarResultadoProibido(
-      correspondenciasOrdenadas
+    return montarResultadoProibidoComContextoPue(
+      correspondenciasOrdenadas,
+      excecoes,
+      cultura
     );
 
   }
@@ -532,26 +507,23 @@ function montarResultadoProibido(
 
 
 // =====================================================
-// VERIFICAR PUE ANTES DA PROIBIÇÃO
+// RESULTADO PROIBIDO COM CONTEXTO DE PUE
+//
+// Se houver PUE para o mesmo componente e cultura,
+// mas não aplicável ao Brasil, explicamos isso sem
+// exibir condições como se fossem válidas para o país.
 // =====================================================
 
-function montarResultadoPueSeAplicavel(
+function montarResultadoProibidoComContextoPue(
   correspondencias,
   excecoes,
-  cultura,
-  pragas
+  cultura
 ) {
 
-  if (
-    !Array.isArray(correspondencias) ||
-    correspondencias.length === 0 ||
-    !Array.isArray(excecoes) ||
-    excecoes.length === 0
-  ) {
-
-    return null;
-
-  }
+  const componentes =
+    obterNomesComponentes(
+      correspondencias
+    );
 
 
   const excecoesCorrespondentes =
@@ -561,140 +533,89 @@ function montarResultadoPueSeAplicavel(
     );
 
 
-  if (
-    excecoesCorrespondentes.length === 0
-  ) {
-
-    return null;
-
-  }
-
-
-  const excecoesValidas =
+  const excecoesMesmaCultura =
     excecoesCorrespondentes.filter(
       excecao =>
-        excecaoAplicavel(
+        excecaoDentroDaValidade(
+          excecao
+        ) &&
+        excecaoAplicavelCultura(
           excecao,
-          cultura,
-          pragas
+          cultura
         )
     );
 
 
-  console.log(
-    "🌱 PUEs correspondentes:",
-    excecoesCorrespondentes
-  );
+  const excecoesBrasil =
+    excecoesMesmaCultura.filter(
+      excecao =>
+        excecaoAplicavelAoBrasil(
+          excecao
+        )
+    );
 
 
-  console.log(
-    "✅ PUEs aplicáveis:",
-    excecoesValidas
-  );
-
-
+  // Se houver exceção válida para a cultura, mas nenhuma
+  // delas for aplicável ao Brasil, explicamos claramente.
   if (
-    excecoesValidas.length === 0
+    excecoesMesmaCultura.length > 0 &&
+    excecoesBrasil.length === 0
   ) {
 
-    return null;
-
-  }
-
-
-  const componentes =
-    obterNomesComponentes(
-      excecoesValidas
-    );
+    const paises =
+      obterTextosUnicos(
+        excecoesMesmaCultura,
+        "paises"
+      );
 
 
-  const condicoes =
-    obterTextosUnicos(
-      excecoesValidas,
-      "condicoes_uso"
-    );
+    const partes = [
+      `Componente restritivo: ${componentes}.`,
+      `Existe PUE para a cultura ${cultura || "consultada"}, porém a exceção identificada não é aplicável ao Brasil.`
+    ];
 
 
-  const validade =
-    obterValidadesExcecao(
-      excecoesValidas
-    );
+    if (paises.length > 0) {
 
+      partes.push(
+        `País(es) contemplado(s) pela PUE: ${paises.join("; ")}.`
+      );
 
-  const culturas =
-    obterTextosUnicos(
-      excecoesValidas,
-      "cultura"
-    );
+    }
 
-
-  const paises =
-    obterTextosUnicos(
-      excecoesValidas,
-      "paises"
-    );
-
-
-  const partes = [];
-
-
-  partes.push(
-    `Componente(s): ${componentes}.`
-  );
-
-
-  if (
-    culturas.length > 0
-  ) {
 
     partes.push(
-      `Cultura da exceção: ${culturas.join("; ")}.`
+      "Não foi identificada autorização de uso excepcional aplicável ao uso consultado no Brasil."
     );
+
+
+    return {
+
+      classificacao:
+        "PROIBIDO",
+
+      permissao:
+        "NÃO UTILIZAR",
+
+      detalhamento:
+        partes.join(" ")
+
+    };
 
   }
 
 
-  if (
-    paises.length > 0
-  ) {
-
-    partes.push(
-      `País(es): ${paises.join("; ")}.`
-    );
-
-  }
-
-
-  if (
-    condicoes.length > 0
-  ) {
-
-    partes.push(
-      `Condições: ${condicoes.join(" ")}`
-    );
-
-  }
-
-
-  if (validade) {
-
-    partes.push(
-      `Validade informada: ${validade}.`
-    );
-
-  }
-
-
+  // Caso padrão: proibido sem PUE aplicável/relevante.
   return {
 
     classificacao:
-      "USO EXCEPCIONAL",
+      "PROIBIDO",
 
     permissao:
-      "SOMENTE NAS CONDIÇÕES DA PUE",
+      "NÃO UTILIZAR",
 
     detalhamento:
-      partes.join(" ")
+      `Componente(s) restritivo(s): ${componentes}. Não foi identificada PUE aplicável à combinação consultada.`
 
   };
 
@@ -1332,9 +1253,6 @@ function normalizarTextoRainforest(valor) {
     // à comparação textual.
     .replace(/[-_,;:+/]/g, " ")
 
-    // Equivalência de nomenclatura Agrofit x Rainforest
-    .replace(/\bimidacloprido\b/g, "imidacloprida")
-    
     .replace(/\s+/g, " ")
     .trim();
 
