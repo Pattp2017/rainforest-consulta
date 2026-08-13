@@ -1,4 +1,4 @@
-// =====================================================
+/ =====================================================
 // RAINFOREST
 // Classificação dos componentes e validação de PUE
 // Projeto: Rainforest Consulta
@@ -145,6 +145,33 @@ async function consultarClassificacaoRainforest(
     identificarTipoClassificacao(
       principal.classificacao
     );
+
+
+  // ===================================================
+  // PRIORIDADE DA PUE
+  //
+  // Um componente pode estar na lista de PROIBIDOS e,
+  // ao mesmo tempo, possuir uma exceção válida na PUE
+  // para cultura/praga/país/período específicos.
+  //
+  // Por isso, a PUE precisa ser verificada ANTES de
+  // concluir definitivamente como PROIBIDO.
+  // ===================================================
+
+  const resultadoPuePrioritaria =
+    montarResultadoPueSeAplicavel(
+      correspondenciasOrdenadas,
+      excecoes,
+      cultura,
+      pragas
+    );
+
+
+  if (resultadoPuePrioritaria) {
+
+    return resultadoPuePrioritaria;
+
+  }
 
 
   // ===================================================
@@ -498,6 +525,176 @@ function montarResultadoProibido(
 
     detalhamento:
       detalhamento
+
+  };
+
+}
+
+
+// =====================================================
+// VERIFICAR PUE ANTES DA PROIBIÇÃO
+// =====================================================
+
+function montarResultadoPueSeAplicavel(
+  correspondencias,
+  excecoes,
+  cultura,
+  pragas
+) {
+
+  if (
+    !Array.isArray(correspondencias) ||
+    correspondencias.length === 0 ||
+    !Array.isArray(excecoes) ||
+    excecoes.length === 0
+  ) {
+
+    return null;
+
+  }
+
+
+  const excecoesCorrespondentes =
+    localizarExcecoesComponentes(
+      correspondencias,
+      excecoes
+    );
+
+
+  if (
+    excecoesCorrespondentes.length === 0
+  ) {
+
+    return null;
+
+  }
+
+
+  const excecoesValidas =
+    excecoesCorrespondentes.filter(
+      excecao =>
+        excecaoAplicavel(
+          excecao,
+          cultura,
+          pragas
+        )
+    );
+
+
+  console.log(
+    "🌱 PUEs correspondentes:",
+    excecoesCorrespondentes
+  );
+
+
+  console.log(
+    "✅ PUEs aplicáveis:",
+    excecoesValidas
+  );
+
+
+  if (
+    excecoesValidas.length === 0
+  ) {
+
+    return null;
+
+  }
+
+
+  const componentes =
+    obterNomesComponentes(
+      excecoesValidas
+    );
+
+
+  const condicoes =
+    obterTextosUnicos(
+      excecoesValidas,
+      "condicoes_uso"
+    );
+
+
+  const validade =
+    obterValidadesExcecao(
+      excecoesValidas
+    );
+
+
+  const culturas =
+    obterTextosUnicos(
+      excecoesValidas,
+      "cultura"
+    );
+
+
+  const paises =
+    obterTextosUnicos(
+      excecoesValidas,
+      "paises"
+    );
+
+
+  const partes = [];
+
+
+  partes.push(
+    `Componente(s): ${componentes}.`
+  );
+
+
+  if (
+    culturas.length > 0
+  ) {
+
+    partes.push(
+      `Cultura da exceção: ${culturas.join("; ")}.`
+    );
+
+  }
+
+
+  if (
+    paises.length > 0
+  ) {
+
+    partes.push(
+      `País(es): ${paises.join("; ")}.`
+    );
+
+  }
+
+
+  if (
+    condicoes.length > 0
+  ) {
+
+    partes.push(
+      `Condições: ${condicoes.join(" ")}`
+    );
+
+  }
+
+
+  if (validade) {
+
+    partes.push(
+      `Validade informada: ${validade}.`
+    );
+
+  }
+
+
+  return {
+
+    classificacao:
+      "USO EXCEPCIONAL",
+
+    permissao:
+      "SOMENTE NAS CONDIÇÕES DA PUE",
+
+    detalhamento:
+      partes.join(" ")
 
   };
 
