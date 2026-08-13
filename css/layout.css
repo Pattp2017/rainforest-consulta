@@ -1,10 +1,8 @@
 /* =========================================================
-   LAYOUT GERAL
+   LAYOUT — DARK / NEON
 ========================================================= */
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 html,
 body {
@@ -13,74 +11,40 @@ body {
   min-height: 100%;
 }
 
-body {
-  min-height: 100vh;
-}
+body { min-height: 100vh; }
 
 .app {
   width: 100%;
   min-height: 100vh;
-  padding: 18px;
+  padding: 14px 18px 28px;
 }
-
-/* =========================================================
-   CABEÇALHO
-========================================================= */
 
 .header {
   width: 100%;
-  max-width: 1180px;
-  margin: 0 auto 18px auto;
-  text-align: center;
+  max-width: 1240px;
+  margin: 0 auto 12px;
+  text-align: left;
 }
 
-.consulta-container {
-  position: relative;
-}
-
-.classificacao-principal {
-  position: relative;
-  z-index: 1;
-}
-
-.header h1 {
-  margin: 0;
-}
-
-.header span {
-  display: block;
-  margin-top: 6px;
-}
-
-/* =========================================================
-   CONTAINER PRINCIPAL
-========================================================= */
+.header h1 { margin: 0; }
+.header span { display: block; }
 
 .consulta-container {
   width: 100%;
-  max-width: 980px;
+  max-width: 1240px;
   margin: 0 auto;
-
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
-/* =========================================================
-   CARD DE CONSULTA
-========================================================= */
-
-.card-consulta {
-  width: 100%;
-}
+.card-consulta { width: 100%; }
 
 .consulta-form {
   width: 100%;
-
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 160px;
-  gap: 12px;
-
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
   align-items: end;
 }
 
@@ -89,13 +53,7 @@ body {
   min-width: 0;
 }
 
-/* =========================================================
-   FORMULÁRIOS
-========================================================= */
-
-.form-group {
-  width: 100%;
-}
+.form-group { width: 100%; }
 
 .form-group label {
   display: block;
@@ -107,133 +65,95 @@ body {
   min-height: 46px;
 }
 
-/* =========================================================
-   BOTÃO DE BUSCA
-========================================================= */
-
-.btn-buscar {
-  min-height: 46px;
-  width: 100%;
-}
-
-/* =========================================================
-   SUGESTÕES DO AUTOCOMPLETE
-========================================================= */
-
 .suggestions {
   position: absolute;
-
-  top: calc(100% + 4px);
+  top: calc(100% + 5px);
   left: 0;
   right: 0;
-
   z-index: 100;
-
-  max-height: 260px;
+  max-height: 290px;
   overflow-y: auto;
 }
 
-/* =========================================================
-   BLOCO DE CULTURAS
-========================================================= */
-
-.bloco-culturas {
-  margin-top: 16px;
-}
-
-.culture-title {
-  margin-bottom: 9px;
-}
+.bloco-culturas { margin-top: 12px; }
+.culture-title { margin-bottom: 8px; }
 
 .culture-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 7px;
 }
 
 .culture-button {
-  min-width: 95px;
-  min-height: 38px;
-  padding: 8px 14px;
+  min-width: 92px;
+  min-height: 36px;
+  padding: 7px 13px;
 }
 
-/* =========================================================
-   CLASSIFICAÇÃO PRINCIPAL
-========================================================= */
-
 .classificacao-principal {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: 210px minmax(0, 1fr);
+  grid-template-columns: 200px minmax(0, 1fr);
   gap: 12px;
-
   align-items: center;
 }
 
 .classificacao-label {
   display: flex;
   align-items: center;
-
   min-height: 48px;
 }
 
 .classificacao-resultado {
   width: 100%;
-  min-height: 48px;
-
+  min-height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-
   text-align: center;
 }
 
-/* =========================================================
-   CARD DE DADOS
-========================================================= */
-
-.card-dados {
-  width: 100%;
-}
-
-.data-row {
+#cardProduto {
   display: grid;
-  grid-template-columns: 190px minmax(0, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  align-items: stretch;
+}
 
-  gap: 14px;
-  align-items: start;
+#cardProduto > .card-title { grid-column: 1 / -1; }
 
+#cardProduto > .data-row:nth-of-type(1) { grid-column: span 4; }
+#cardProduto > .data-row:nth-of-type(2) { grid-column: span 2; }
+#cardProduto > .data-row:nth-of-type(3) { grid-column: span 2; }
+#cardProduto > .data-row:nth-of-type(4) { grid-column: span 2; }
+#cardProduto > .data-row:nth-of-type(5) { grid-column: span 2; }
+
+#cardProduto > .data-row {
   width: 100%;
-}
-
-.data-label {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
 }
 
-.data-value {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
+.data-label,
+.data-value { min-width: 0; }
 
-/* =========================================================
-   PODE UTILIZAR?
-========================================================= */
+.data-value { overflow-wrap: anywhere; }
 
-.card-permissao {
-  width: 100%;
-}
+.card-permissao { width: 100%; }
 
 .permissao-grid {
   display: grid;
-  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
-
-  gap: 12px;
+  grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.1fr);
+  gap: 10px;
   align-items: center;
 }
 
 .permissao-pergunta,
 .permissao-resposta {
-  min-height: 50px;
-
+  min-height: 46px;
   display: flex;
   align-items: center;
 }
@@ -243,34 +163,23 @@ body {
   text-align: center;
 }
 
-/* =========================================================
-   DUAS COLUNAS
-========================================================= */
-
-.two-columns {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-
-  gap: 12px 24px;
-}
-
-/* =========================================================
-   CAIXAS DE TEXTO
-========================================================= */
+#cardDetalhamento { width: 100%; }
 
 .box-group {
   width: 100%;
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
 .text-box {
   width: 100%;
-  margin-top: 8px;
+  margin-top: 7px;
 }
 
-/* =========================================================
-   PILLS
-========================================================= */
+.two-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 20px;
+}
 
 .pill-container {
   display: flex;
@@ -278,132 +187,71 @@ body {
   gap: 7px;
 }
 
-/* =========================================================
-   FUNDAMENTAÇÃO
-========================================================= */
-
 .legal-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 20px;
-
-  margin-top: 18px;
+  margin-top: 16px;
 }
-
-/* =========================================================
-   STATUS DA CONCILIAÇÃO
-========================================================= */
-
-.card-conciliacao {
-  display: grid;
-  grid-template-columns: 210px minmax(0, 1fr);
-
-  gap: 12px;
-  align-items: center;
-}
-
-.conciliacao-label,
-.conciliacao-status {
-  min-height: 44px;
-
-  display: flex;
-  align-items: center;
-}
-
-.conciliacao-status {
-  justify-content: center;
-}
-
-/* =========================================================
-   MENSAGENS
-========================================================= */
 
 .loading,
 .error-box {
   width: 100%;
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
-/* =========================================================
-   UTILITÁRIOS
-========================================================= */
+.hidden { display: none !important; }
 
-.hidden {
-  display: none !important;
-}
+@media (max-width: 900px) {
+  .app { padding: 12px; }
+  .classificacao-principal { grid-template-columns: 1fr; }
 
-/* =========================================================
-   RESPONSIVIDADE
-========================================================= */
-
-@media (max-width: 850px) {
-
-  .app {
-    padding: 12px;
+  #cardProduto {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .consulta-form {
-    grid-template-columns: 1fr;
+  #cardProduto > .data-row:nth-of-type(1),
+  #cardProduto > .data-row:nth-of-type(2),
+  #cardProduto > .data-row:nth-of-type(3),
+  #cardProduto > .data-row:nth-of-type(4),
+  #cardProduto > .data-row:nth-of-type(5) {
+    grid-column: span 1;
   }
 
-  .classificacao-principal {
-    grid-template-columns: 1fr;
+  #cardProduto > .data-row:nth-of-type(1) {
+    grid-column: 1 / -1;
   }
 
-  .card-conciliacao {
-    grid-template-columns: 1fr;
-  }
-
-  .permissao-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .two-columns {
-    grid-template-columns: 1fr;
-  }
-
-  .data-row {
-    grid-template-columns: 1fr;
-    gap: 4px;
-  }
+  .permissao-grid { grid-template-columns: 1fr; }
+  .two-columns { grid-template-columns: 1fr; }
 
   .legal-footer {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .btn-buscar {
-    width: 100%;
-  }
-
-  .culture-button {
-    flex: 1 1 auto;
-  }
+  .culture-button { flex: 1 1 auto; }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 600px) {
+  .app { padding: 8px; }
+  .consulta-container { gap: 9px; }
+  #cardProduto { grid-template-columns: 1fr; }
 
-  .app {
-    padding: 8px;
+  #cardProduto > .data-row:nth-of-type(1),
+  #cardProduto > .data-row:nth-of-type(2),
+  #cardProduto > .data-row:nth-of-type(3),
+  #cardProduto > .data-row:nth-of-type(4),
+  #cardProduto > .data-row:nth-of-type(5) {
+    grid-column: 1 / -1;
   }
 
-  .consulta-container {
-    gap: 10px;
-  }
-
-  .culture-options {
-    gap: 6px;
-  }
-
-  .culture-button {
-    width: 100%;
-  }
+  .culture-options { gap: 6px; }
+  .culture-button { width: 100%; }
 
   .classificacao-resultado,
-  .permissao-resposta,
-  .conciliacao-status {
+  .permissao-resposta {
     justify-content: flex-start;
     text-align: left;
   }
