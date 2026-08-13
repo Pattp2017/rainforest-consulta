@@ -91,6 +91,35 @@ body {
 
 
 /* =========================================================
+   ORDEM VISUAL DOS CARDS
+========================================================= */
+
+/* 1 - Busca / seleção da cultura */
+.card-consulta {
+  order: 1;
+}
+
+/* 2 - Classificação */
+#cardClassificacaoPrincipal {
+  order: 2;
+}
+
+/* 3 - Pode utilizar? */
+#cardPodeUtilizar {
+  order: 3;
+}
+
+/* 4 - Detalhamento / Condições */
+#cardDetalhamento {
+  order: 4;
+}
+
+/* 5 - Dados do produto */
+#cardProduto {
+  order: 5;
+}
+
+/* =========================================================
    FORMULÁRIOS
 ========================================================= */
 
