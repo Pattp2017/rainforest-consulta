@@ -91,7 +91,14 @@ async function consultarClassificacaoRainforest(
       ingredienteAtivo,
       componentes
     );
+const ingredientesComCas =
+  montarIngredientesComCasRainforest(
+    ingredienteAtivo,
+    componentes
+  );
 
+produto.ingrediente_ativo_com_cas =
+  ingredientesComCas;
 
   console.log(
     "🌳 Correspondências Rainforest:",
