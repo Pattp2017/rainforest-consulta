@@ -367,7 +367,9 @@ function localizarComponentesRainforest(
 
 // =====================================================
 // ASSOCIAR INGREDIENTES ATIVOS AOS NÚMEROS CAS
+// Preserva o texto original do Agrofit
 // Cada ingrediente é exibido em uma linha
+// Aceita múltiplos CAS para o mesmo componente
 // =====================================================
 
 function montarIngredientesComCasRainforest(
@@ -382,8 +384,7 @@ function montarIngredientesComCasRainforest(
     return "";
   }
 
-  // O Agrofit normalmente separa ingredientes por "+"
-  // Também aceitamos ";" caso apareça em outros registros.
+  // Separa os ingredientes do Agrofit
   const ingredientes =
     textoOriginal
       .split(/\s+\+\s+|;/)
@@ -394,53 +395,72 @@ function montarIngredientesComCasRainforest(
   const resultado =
     ingredientes.map((ingrediente) => {
 
-      // Procura qual componente Rainforest está
-      // contido neste ingrediente do Agrofit.
-      const correspondencia =
-        componentes.find((registro) => {
+      const ingredienteNormalizado =
+        normalizarTextoRainforest(ingrediente);
+
+
+      // Localiza TODOS os registros Rainforest
+      // cujo componente aparece no texto do ingrediente.
+      const correspondencias =
+        componentes.filter((registro) => {
 
           const aliases =
             obterAliasesComponente(
               registro.componente
             );
 
-          return aliases.some((alias) =>
-            textosCompativeisRainforest(
-              ingrediente,
-              alias
-            )
-          );
+          return aliases.some((alias) => {
+
+            const aliasNormalizado =
+              normalizarTextoRainforest(alias);
+
+            return (
+              aliasNormalizado &&
+              ingredienteNormalizado.includes(
+                aliasNormalizado
+              )
+            );
+
+          });
 
         });
 
 
-      // Se não encontrou correspondência,
-      // preserva exatamente o texto do Agrofit.
-      if (!correspondencia) {
+      if (!correspondencias.length) {
         return ingrediente;
       }
 
 
-      const cas =
-        String(
-          correspondencia.nr_cas || ""
-        ).trim();
+      // Reúne todos os CAS encontrados,
+      // eliminando duplicidades.
+      const numerosCas =
+        [...new Set(
+          correspondencias
+            .map(registro =>
+              String(registro.nr_cas || "").trim()
+            )
+            .filter(cas =>
+              cas &&
+              cas.toLowerCase() !== "null" &&
+              cas.toLowerCase() !== "diversos"
+            )
+        )];
 
 
-      // Encontrou componente, mas não há CAS cadastrado.
-      if (!cas) {
+      if (!numerosCas.length) {
         return ingrediente;
       }
 
 
-      return `${ingrediente} - CAS ${cas}`;
+      return (
+        `${ingrediente} - CAS ` +
+        numerosCas.join(" / ")
+      );
 
     });
 
 
-  // Cada ingrediente em uma linha.
   return resultado.join("\n");
-
 }
 
 // =====================================================
