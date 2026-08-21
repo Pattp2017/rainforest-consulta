@@ -379,7 +379,9 @@ function montarIngredientesComCasRainforest(
 
   const textoOriginal =
     String(ingredienteAtivo || "").trim();
-
+console.log("🧪 INGREDIENTE RECEBIDO:", ingredienteAtivo);
+console.log("🧪 COMPONENTES RECEBIDOS:", componentes);
+  
   if (!textoOriginal) {
     return "";
   }
@@ -397,6 +399,12 @@ function montarIngredientesComCasRainforest(
 
       const ingredienteNormalizado =
         normalizarTextoRainforest(ingrediente);
+      console.log(
+  "🧪 TESTANDO INGREDIENTE:",
+  ingrediente,
+  "=>",
+  ingredienteNormalizado
+);
 
 
       // Localiza TODOS os registros Rainforest
