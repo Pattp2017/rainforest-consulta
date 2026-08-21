@@ -367,6 +367,7 @@ function localizarComponentesRainforest(
 
 // =====================================================
 // ASSOCIAR INGREDIENTES ATIVOS AOS NÚMEROS CAS
+// Cada ingrediente é exibido em uma linha
 // =====================================================
 
 function montarIngredientesComCasRainforest(
@@ -374,16 +375,27 @@ function montarIngredientesComCasRainforest(
   componentes
 ) {
 
+  const textoOriginal =
+    String(ingredienteAtivo || "").trim();
+
+  if (!textoOriginal) {
+    return "";
+  }
+
+  // O Agrofit normalmente separa ingredientes por "+"
+  // Também aceitamos ";" caso apareça em outros registros.
   const ingredientes =
-    String(ingredienteAtivo || "")
-      .split(";")
+    textoOriginal
+      .split(/\s+\+\s+|;/)
       .map(item => item.trim())
       .filter(Boolean);
 
 
-  return ingredientes
-    .map((ingrediente) => {
+  const resultado =
+    ingredientes.map((ingrediente) => {
 
+      // Procura qual componente Rainforest está
+      // contido neste ingrediente do Agrofit.
       const correspondencia =
         componentes.find((registro) => {
 
@@ -392,40 +404,42 @@ function montarIngredientesComCasRainforest(
               registro.componente
             );
 
-          return aliases.some(
-            alias =>
-              textosCompativeisRainforest(
-                ingrediente,
-                alias
-              )
+          return aliases.some((alias) =>
+            textosCompativeisRainforest(
+              ingrediente,
+              alias
+            )
           );
 
         });
 
 
-      if (
-        !correspondencia ||
-        !correspondencia.nr_cas
-      ) {
+      // Se não encontrou correspondência,
+      // preserva exatamente o texto do Agrofit.
+      if (!correspondencia) {
         return ingrediente;
       }
 
 
       const cas =
         String(
-          correspondencia.nr_cas
+          correspondencia.nr_cas || ""
         ).trim();
 
 
+      // Encontrou componente, mas não há CAS cadastrado.
       if (!cas) {
         return ingrediente;
       }
 
 
-      return `${ingrediente} (CAS ${cas})`;
+      return `${ingrediente} - CAS ${cas}`;
 
-    })
-    .join("; ");
+    });
+
+
+  // Cada ingrediente em uma linha.
+  return resultado.join("\n");
 
 }
 
