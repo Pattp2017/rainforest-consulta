@@ -197,7 +197,9 @@ function preencherProdutoConsolidado(produto) {
     produto.nr_registro || "-";
 
   elementosUI.ingredienteAtivo.textContent =
-    produto.ingrediente_ativo || "-";
+    produto.ingrediente_ativo_com_cas ||
+    produto.ingrediente_ativo ||
+    "-";
 
   elementosUI.classeAgronomica.textContent =
     produto.classe || "-";
