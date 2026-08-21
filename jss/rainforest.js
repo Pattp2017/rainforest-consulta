@@ -358,6 +358,69 @@ function localizarComponentesRainforest(
 
 }
 
+// =====================================================
+// ASSOCIAR INGREDIENTES ATIVOS AOS NÚMEROS CAS
+// =====================================================
+
+function montarIngredientesComCasRainforest(
+  ingredienteAtivo,
+  componentes
+) {
+
+  const ingredientes =
+    String(ingredienteAtivo || "")
+      .split(";")
+      .map(item => item.trim())
+      .filter(Boolean);
+
+
+  return ingredientes
+    .map((ingrediente) => {
+
+      const correspondencia =
+        componentes.find((registro) => {
+
+          const aliases =
+            obterAliasesComponente(
+              registro.componente
+            );
+
+          return aliases.some(
+            alias =>
+              textosCompativeisRainforest(
+                ingrediente,
+                alias
+              )
+          );
+
+        });
+
+
+      if (
+        !correspondencia ||
+        !correspondencia.nr_cas
+      ) {
+        return ingrediente;
+      }
+
+
+      const cas =
+        String(
+          correspondencia.nr_cas
+        ).trim();
+
+
+      if (!cas) {
+        return ingrediente;
+      }
+
+
+      return `${ingrediente} (CAS ${cas})`;
+
+    })
+    .join("; ");
+
+}
 
 // =====================================================
 // COMPARAR TEXTOS NORMALIZADOS
