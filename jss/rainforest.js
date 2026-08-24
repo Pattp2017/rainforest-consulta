@@ -461,7 +461,7 @@ console.log("🧪 COMPONENTES RECEBIDOS:", componentes);
 
 
       return (
-        `${ingrediente} - CAS ` +
+        `• ${ingrediente} - CAS ` +
         numerosCas.join(" / ")
       );
 
