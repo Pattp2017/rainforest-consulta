@@ -435,7 +435,7 @@ console.log("🧪 COMPONENTES RECEBIDOS:", componentes);
 
 
       if (!correspondencias.length) {
-        return ingrediente;
+        return `• ${ingrediente}`;
       }
 
 
