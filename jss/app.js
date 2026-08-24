@@ -328,9 +328,6 @@ async function tratarProdutoSelecionado(
 
     // -------------------------------------------------
     // SE SÓ EXISTIR UMA CULTURA
-    //
-    // Mantemos o botão visível, mas já podemos
-    // selecioná-la automaticamente.
     // -------------------------------------------------
 
     if (culturas.length === 1) {
@@ -484,16 +481,32 @@ async function tratarCulturaSelecionada(
       );
 
 
-    preencherProdutoConsolidado(
+    // -------------------------------------------------
+    // CONSULTAR RAINFOREST
+    //
+    // A consulta Rainforest cria:
+    // produto.ingrediente_ativo_com_cas
+    // -------------------------------------------------
+
+    await processarClassificacaoRainforest(
       produtoConsolidado
     );
 
 
     // -------------------------------------------------
-    // CONSULTAR RAINFOREST
+    // PREENCHER PRODUTO
+    //
+    // Só fazemos isso depois da Rainforest,
+    // porque agora o CAS já pode existir.
     // -------------------------------------------------
 
-    await processarClassificacaoRainforest(
+    preencherProdutoConsolidado(
+      produtoConsolidado
+    );
+
+
+    console.log(
+      "🧪 Produto consolidado após Rainforest:",
       produtoConsolidado
     );
 
@@ -532,14 +545,6 @@ async function tratarCulturaSelecionada(
 
 }
 
-// -------------------------------------------------
-// PREENCHER PRODUTO APÓS CONSULTA RAINFOREST
-// Agora ingrediente_ativo_com_cas já foi criado
-// -------------------------------------------------
-
-preencherProdutoConsolidado(
-  produtoConsolidado
-);
 
 // =====================================================
 // CLASSIFICAÇÃO RAINFOREST
@@ -549,19 +554,11 @@ async function processarClassificacaoRainforest(
   produto
 ) {
 
-  /*
-    O rainforest.js será ajustado na próxima etapa.
-
-    Enquanto isso, esta função procura pelas funções
-    de classificação existentes sem derrubar a página.
-  */
-
-
   let resultado = null;
 
 
   // ---------------------------------------------------
-  // NOVA FUNÇÃO, QUE VAMOS PADRONIZAR
+  // CONSULTAR CLASSIFICADOR RAINFOREST
   // ---------------------------------------------------
 
   if (
@@ -578,7 +575,7 @@ async function processarClassificacaoRainforest(
 
 
   // ---------------------------------------------------
-  // CASO AINDA NÃO TENHAMOS CLASSIFICADOR
+  // CASO NÃO TENHAMOS CLASSIFICADOR
   // ---------------------------------------------------
 
   if (!resultado) {
