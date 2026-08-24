@@ -532,6 +532,14 @@ async function tratarCulturaSelecionada(
 
 }
 
+// -------------------------------------------------
+// PREENCHER PRODUTO APÓS CONSULTA RAINFOREST
+// Agora ingrediente_ativo_com_cas já foi criado
+// -------------------------------------------------
+
+preencherProdutoConsolidado(
+  produtoConsolidado
+);
 
 // =====================================================
 // CLASSIFICAÇÃO RAINFOREST
