@@ -161,15 +161,17 @@ async function buscarRegistros(
       parametros
     );
 
-  const resposta =
-    await fetch(
-      url,
-      {
-        method: "GET",
-        headers:
-          obterCabecalhosSupabase()
-      }
-    );
+  let resposta;
+  try {
+    resposta = await fetch(url, {
+      method: "GET",
+      headers: obterCabecalhosSupabase(),
+      mode: "cors"
+    });
+  } catch (erro) {
+    console.error("Falha de rede na consulta Supabase:", { tabela, url, erro });
+    throw new Error("Não foi possível conectar ao Supabase. Verifique se o projeto está ativo, se a URL está correta e se a rede ou o navegador não estão bloqueando a conexão (CORS).");
+  }
 
   return await tratarRespostaSupabase(
     resposta
@@ -329,7 +331,7 @@ async function testarConexaoSupabase() {
 
   const dados =
     await buscarRegistros(
-      "agrofit_raw",
+      "agrofit_produtos_busca",
       {
         select: "nr_registro",
         limit: 1
