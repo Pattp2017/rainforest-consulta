@@ -10,10 +10,10 @@
 // =====================================================
 
 const SUPABASE_URL =
-  "https://kdjigqkyqymitdcoczwm.supabase.co";
+  "https://uofnninqxnsvaemxpwhh.supabase.co";
 
 const SUPABASE_API_KEY =
-  "sb_publishable_UU1id7jF7zQ2s3SMYXdbdQ_DWdzw0iD";
+  "sb_publishable_kCX0kt1EFYYL0sR3zQHDzg_6rLVRJQ8";
 
 
 // =====================================================
@@ -50,7 +50,6 @@ function obterCabecalhosSupabase() {
 
   return {
     apikey: SUPABASE_API_KEY,
-    Authorization: `Bearer ${SUPABASE_API_KEY}`,
     "Content-Type": "application/json",
     Accept: "application/json"
   };
